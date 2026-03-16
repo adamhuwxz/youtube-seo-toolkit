@@ -139,3 +139,14 @@ export async function getKeywordMetrics(
     return [];
   }
 }
+
+export async function getKeywordSuggestions(
+  seedKeywords: string[],
+  options?: {
+    locationCode?: number;
+    languageCode?: string;
+    maxKeywords?: number;
+  }
+): Promise<KeywordMetric[]> {
+  return getKeywordMetrics(seedKeywords, options);
+}

@@ -1,0 +1,190 @@
+[debug] [2026-03-16T17:20:21.201Z] ----------------------------------------------------------------------
+[debug] [2026-03-16T17:20:21.204Z] Command:       C:\Users\adamj\AppData\Local\Microsoft\WindowsApps\firebase.exe C:\Users\adamj\.cache\firebase\tools\lib\node_modules\firebase-tools\lib\bin\firebase deploy
+[debug] [2026-03-16T17:20:21.205Z] CLI Version:   14.4.0
+[debug] [2026-03-16T17:20:21.205Z] Platform:      win32
+[debug] [2026-03-16T17:20:21.205Z] Node Version:  v20.18.2
+[debug] [2026-03-16T17:20:21.205Z] Time:          Mon Mar 16 2026 17:20:21 GMT+0000 (Greenwich Mean Time)
+[debug] [2026-03-16T17:20:21.205Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-03-16T17:20:21.523Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-16T17:20:21.524Z] > authorizing via signed-in user (adamhuwxz@gmail.com)
+[debug] [2026-03-16T17:20:21.524Z] [iam] checking project seo-toolkit-885bc for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]
+[debug] [2026-03-16T17:20:21.526Z] Checked if tokens are valid: false, expires at: 1773681709015
+[debug] [2026-03-16T17:20:21.526Z] Checked if tokens are valid: false, expires at: 1773681709015
+[debug] [2026-03-16T17:20:21.526Z] > refreshing access token with scopes: []
+[debug] [2026-03-16T17:20:21.528Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-03-16T17:20:21.529Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-03-16T17:20:21.711Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-03-16T17:20:21.711Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-03-16T17:20:21.906Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/seo-toolkit-885bc:testIamPermissions [none]
+[debug] [2026-03-16T17:20:21.906Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/seo-toolkit-885bc:testIamPermissions x-goog-quota-user=projects/seo-toolkit-885bc
+[debug] [2026-03-16T17:20:21.906Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/seo-toolkit-885bc:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]}
+[debug] [2026-03-16T17:20:22.536Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/seo-toolkit-885bc:testIamPermissions 200
+[debug] [2026-03-16T17:20:22.536Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/seo-toolkit-885bc:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]}
+[debug] [2026-03-16T17:20:22.536Z] Checked if tokens are valid: true, expires at: 1773685220712
+[debug] [2026-03-16T17:20:22.536Z] Checked if tokens are valid: true, expires at: 1773685220712
+[debug] [2026-03-16T17:20:22.536Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/seo-toolkit-885bc/serviceAccounts/seo-toolkit-885bc@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2026-03-16T17:20:22.536Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/seo-toolkit-885bc/serviceAccounts/seo-toolkit-885bc@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2026-03-16T17:20:22.745Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/seo-toolkit-885bc/serviceAccounts/seo-toolkit-885bc@appspot.gserviceaccount.com:testIamPermissions 200
+[debug] [2026-03-16T17:20:22.745Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/seo-toolkit-885bc/serviceAccounts/seo-toolkit-885bc@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2026-03-16T17:20:22.746Z] Checked if tokens are valid: true, expires at: 1773685220712
+[debug] [2026-03-16T17:20:22.746Z] Checked if tokens are valid: true, expires at: 1773685220712
+[debug] [2026-03-16T17:20:22.746Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/seo-toolkit-885bc [none]
+[debug] [2026-03-16T17:20:23.086Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/seo-toolkit-885bc 200
+[debug] [2026-03-16T17:20:23.086Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/seo-toolkit-885bc {"projectId":"seo-toolkit-885bc","projectNumber":"1079446487444","displayName":"youtube-seo-toolkit","name":"projects/seo-toolkit-885bc","resources":{"hostingSite":"seo-toolkit-885bc"},"state":"ACTIVE","etag":"1_5f530e39-7676-4062-a143-df7b08c88237"}
+[debug] [2026-03-16T17:20:27.667Z] defaultcredentials: writing to file C:\Users\adamj\AppData\Roaming\firebase\adamhuwxz_gmail_com_application_default_credentials.json
+[debug] [2026-03-16T17:20:27.726Z] Checked if tokens are valid: true, expires at: 1773685220712
+[debug] [2026-03-16T17:20:27.726Z] Checked if tokens are valid: true, expires at: 1773685220712
+[debug] [2026-03-16T17:20:27.727Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/seo-toolkit-885bc/sites pageToken=&pageSize=10
+[debug] [2026-03-16T17:20:28.845Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/seo-toolkit-885bc/sites 200
+[debug] [2026-03-16T17:20:28.845Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/seo-toolkit-885bc/sites {"sites":[{"name":"projects/seo-toolkit-885bc/sites/seo-toolkit-885bc","defaultUrl":"https://seo-toolkit-885bc.web.app","type":"DEFAULT_SITE"}]}
+[debug] [2026-03-16T17:20:28.845Z] Checked if tokens are valid: true, expires at: 1773685220712
+[debug] [2026-03-16T17:20:28.846Z] Checked if tokens are valid: true, expires at: 1773685220712
+[debug] [2026-03-16T17:20:28.846Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/seo-toolkit-885bc/sites 
+[debug] [2026-03-16T17:20:29.809Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/seo-toolkit-885bc/sites 200
+[debug] [2026-03-16T17:20:29.810Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/seo-toolkit-885bc/sites {"sites":[{"name":"projects/seo-toolkit-885bc/sites/seo-toolkit-885bc","defaultUrl":"https://seo-toolkit-885bc.web.app","type":"DEFAULT_SITE"}]}
+[debug] [2026-03-16T17:20:29.810Z] Checked if tokens are valid: true, expires at: 1773685220712
+[debug] [2026-03-16T17:20:29.810Z] Checked if tokens are valid: true, expires at: 1773685220712
+[debug] [2026-03-16T17:20:29.810Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/seo-toolkit-885bc/webApps/-/config [none]
+[debug] [2026-03-16T17:20:30.352Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/seo-toolkit-885bc/webApps/-/config 200
+[debug] [2026-03-16T17:20:30.352Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/seo-toolkit-885bc/webApps/-/config {"projectId":"seo-toolkit-885bc","appId":"1:1079446487444:web:ded2c7501167062443cf81","storageBucket":"seo-toolkit-885bc.firebasestorage.app","apiKey":"AIzaSyDsOpQ6EBQfumR0bNnaq-yX7EIAD4nI7Co","authDomain":"seo-toolkit-885bc.firebaseapp.com","messagingSenderId":"1079446487444","measurementId":"G-T0R8MB03Z0","projectNumber":"1079446487444","version":"2"}
+[info] 
+   Thank you for trying our early preview of Next.js support on Firebase Hosting.
+   During the preview, support is best-effort and breaking changes can be expected. Proceed with caution.
+   The integration is known to work with Next.js version 12 - 15.0. You may encounter errors.
+
+   Documentation: https://firebase.google.com/docs/hosting/frameworks/nextjs
+   File a bug: https://github.com/firebase/firebase-tools/issues/new?template=bug_report.md
+   Submit a feature request: https://github.com/firebase/firebase-tools/issues/new?template=feature_request.md
+
+   We'd love to learn from you. Express your interest in helping us shape the future of Firebase Hosting: https://goo.gle/41enW5X
+
+[debug] [2026-03-16T17:20:40.160Z] Checked if tokens are valid: true, expires at: 1773685220712
+[debug] [2026-03-16T17:20:40.160Z] Checked if tokens are valid: true, expires at: 1773685220712
+[debug] [2026-03-16T17:20:40.160Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/seo-toolkit-885bc/sites/seo-toolkit-885bc [none]
+[debug] [2026-03-16T17:20:40.962Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/seo-toolkit-885bc/sites/seo-toolkit-885bc 200
+[debug] [2026-03-16T17:20:40.962Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/seo-toolkit-885bc/sites/seo-toolkit-885bc {"name":"projects/seo-toolkit-885bc/sites/seo-toolkit-885bc","defaultUrl":"https://seo-toolkit-885bc.web.app","type":"DEFAULT_SITE"}
+[info] unhandledRejection Error: Inspector is not available
+    at Module.require (pkg/prelude/bootstrap.js:1855:31) {
+  code: 'ERR_INSPECTOR_NOT_AVAILABLE'
+}
+
+[info] Building a Cloud Function to run this application. This is needed due to:
+[info]  • non-static component /api/stripe/checkout/route
+[info]  • non-static component /api/stripe/webhook/route
+[info]  • non-static component /api/tools/tags/route
+[info]  • non-static component /api/tools/tags/validate/route
+[info]  • non-static component /api/tools/titles/route
+[debug] [2026-03-16T17:20:42.922Z]  • non-static component /api/tools/titles/validate/route
+[info]  • and 1 other reasons, use --debug to see more
+[info] 
+[debug] [2026-03-16T17:20:43.268Z] Checked if tokens are valid: true, expires at: 1773685220712
+[debug] [2026-03-16T17:20:43.268Z] Checked if tokens are valid: true, expires at: 1773685220712
+[debug] [2026-03-16T17:20:43.268Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/seo-toolkit-885bc/sites/seo-toolkit-885bc [none]
+[debug] [2026-03-16T17:20:43.818Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/seo-toolkit-885bc/sites/seo-toolkit-885bc 200
+[debug] [2026-03-16T17:20:43.818Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/seo-toolkit-885bc/sites/seo-toolkit-885bc {"name":"projects/seo-toolkit-885bc/sites/seo-toolkit-885bc","defaultUrl":"https://seo-toolkit-885bc.web.app","type":"DEFAULT_SITE"}
+[debug] [2026-03-16T17:20:52.260Z] Error: Command failed: npm i --omit dev --no-audit
+    at genericNodeError (node:internal/errors:984:15)
+    at wrappedFn (node:internal/errors:538:14)
+    at checkExecSyncError (node:child_process:891:11)
+    at Object.execSync (node:child_process:963:15)
+    at execSync (pkg/prelude/bootstrap.js:2120:30)
+    at prepareFrameworks (C:\Users\adamj\.cache\firebase\tools\lib\node_modules\firebase-tools\lib\frameworks\index.js:373:42)
+    at async deploy (C:\Users\adamj\.cache\firebase\tools\lib\node_modules\firebase-tools\lib\deploy\index.js:78:9)
+[error] 
+[error] Error: An unexpected error has occurred.
+[debug] [2026-03-16T18:06:29.989Z] ----------------------------------------------------------------------
+[debug] [2026-03-16T18:06:29.992Z] Command:       C:\Users\adamj\AppData\Local\Microsoft\WindowsApps\firebase.exe C:\Users\adamj\.cache\firebase\tools\lib\node_modules\firebase-tools\lib\bin\firebase deploy
+[debug] [2026-03-16T18:06:29.993Z] CLI Version:   14.4.0
+[debug] [2026-03-16T18:06:29.993Z] Platform:      win32
+[debug] [2026-03-16T18:06:29.993Z] Node Version:  v20.18.2
+[debug] [2026-03-16T18:06:29.993Z] Time:          Mon Mar 16 2026 18:06:29 GMT+0000 (Greenwich Mean Time)
+[debug] [2026-03-16T18:06:29.993Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-03-16T18:06:30.242Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-03-16T18:06:30.242Z] > authorizing via signed-in user (adamhuwxz@gmail.com)
+[debug] [2026-03-16T18:06:30.242Z] [iam] checking project seo-toolkit-885bc for permissions ["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]
+[debug] [2026-03-16T18:06:30.244Z] Checked if tokens are valid: false, expires at: 1773685220712
+[debug] [2026-03-16T18:06:30.244Z] Checked if tokens are valid: false, expires at: 1773685220712
+[debug] [2026-03-16T18:06:30.244Z] > refreshing access token with scopes: []
+[debug] [2026-03-16T18:06:30.246Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-03-16T18:06:30.246Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-03-16T18:06:30.431Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-03-16T18:06:30.431Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-03-16T18:06:31.056Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/seo-toolkit-885bc:testIamPermissions [none]
+[debug] [2026-03-16T18:06:31.056Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/seo-toolkit-885bc:testIamPermissions x-goog-quota-user=projects/seo-toolkit-885bc
+[debug] [2026-03-16T18:06:31.056Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/seo-toolkit-885bc:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]}
+[debug] [2026-03-16T18:06:31.698Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/seo-toolkit-885bc:testIamPermissions 200
+[debug] [2026-03-16T18:06:31.698Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/seo-toolkit-885bc:testIamPermissions {"permissions":["cloudfunctions.functions.create","cloudfunctions.functions.delete","cloudfunctions.functions.get","cloudfunctions.functions.list","cloudfunctions.functions.update","cloudfunctions.operations.get","datastore.indexes.create","datastore.indexes.delete","datastore.indexes.list","datastore.indexes.update","firebase.projects.get","firebasehosting.sites.update","firebaserules.releases.create","firebaserules.releases.update","firebaserules.rulesets.create"]}
+[debug] [2026-03-16T18:06:31.699Z] Checked if tokens are valid: true, expires at: 1773687989431
+[debug] [2026-03-16T18:06:31.699Z] Checked if tokens are valid: true, expires at: 1773687989431
+[debug] [2026-03-16T18:06:31.699Z] >>> [apiv2][query] POST https://iam.googleapis.com/v1/projects/seo-toolkit-885bc/serviceAccounts/seo-toolkit-885bc@appspot.gserviceaccount.com:testIamPermissions [none]
+[debug] [2026-03-16T18:06:31.699Z] >>> [apiv2][body] POST https://iam.googleapis.com/v1/projects/seo-toolkit-885bc/serviceAccounts/seo-toolkit-885bc@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2026-03-16T18:06:32.347Z] <<< [apiv2][status] POST https://iam.googleapis.com/v1/projects/seo-toolkit-885bc/serviceAccounts/seo-toolkit-885bc@appspot.gserviceaccount.com:testIamPermissions 200
+[debug] [2026-03-16T18:06:32.347Z] <<< [apiv2][body] POST https://iam.googleapis.com/v1/projects/seo-toolkit-885bc/serviceAccounts/seo-toolkit-885bc@appspot.gserviceaccount.com:testIamPermissions {"permissions":["iam.serviceAccounts.actAs"]}
+[debug] [2026-03-16T18:06:32.347Z] Checked if tokens are valid: true, expires at: 1773687989431
+[debug] [2026-03-16T18:06:32.347Z] Checked if tokens are valid: true, expires at: 1773687989431
+[debug] [2026-03-16T18:06:32.347Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/seo-toolkit-885bc [none]
+[debug] [2026-03-16T18:06:32.665Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/seo-toolkit-885bc 200
+[debug] [2026-03-16T18:06:32.665Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/seo-toolkit-885bc {"projectId":"seo-toolkit-885bc","projectNumber":"1079446487444","displayName":"youtube-seo-toolkit","name":"projects/seo-toolkit-885bc","resources":{"hostingSite":"seo-toolkit-885bc"},"state":"ACTIVE","etag":"1_5f530e39-7676-4062-a143-df7b08c88237"}
+[debug] [2026-03-16T18:06:35.461Z] defaultcredentials: writing to file C:\Users\adamj\AppData\Roaming\firebase\adamhuwxz_gmail_com_application_default_credentials.json
+[debug] [2026-03-16T18:06:35.463Z] Checked if tokens are valid: true, expires at: 1773687989431
+[debug] [2026-03-16T18:06:35.463Z] Checked if tokens are valid: true, expires at: 1773687989431
+[debug] [2026-03-16T18:06:35.464Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/seo-toolkit-885bc/sites pageToken=&pageSize=10
+[debug] [2026-03-16T18:06:36.567Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/seo-toolkit-885bc/sites 200
+[debug] [2026-03-16T18:06:36.567Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/seo-toolkit-885bc/sites {"sites":[{"name":"projects/seo-toolkit-885bc/sites/seo-toolkit-885bc","defaultUrl":"https://seo-toolkit-885bc.web.app","type":"DEFAULT_SITE"}]}
+[debug] [2026-03-16T18:06:36.567Z] Checked if tokens are valid: true, expires at: 1773687989431
+[debug] [2026-03-16T18:06:36.567Z] Checked if tokens are valid: true, expires at: 1773687989431
+[debug] [2026-03-16T18:06:36.567Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/seo-toolkit-885bc/sites 
+[debug] [2026-03-16T18:06:37.582Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/seo-toolkit-885bc/sites 200
+[debug] [2026-03-16T18:06:37.582Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/seo-toolkit-885bc/sites {"sites":[{"name":"projects/seo-toolkit-885bc/sites/seo-toolkit-885bc","defaultUrl":"https://seo-toolkit-885bc.web.app","type":"DEFAULT_SITE"}]}
+[debug] [2026-03-16T18:06:37.583Z] Checked if tokens are valid: true, expires at: 1773687989431
+[debug] [2026-03-16T18:06:37.583Z] Checked if tokens are valid: true, expires at: 1773687989431
+[debug] [2026-03-16T18:06:37.583Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/seo-toolkit-885bc/webApps/-/config [none]
+[debug] [2026-03-16T18:06:38.098Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/seo-toolkit-885bc/webApps/-/config 200
+[debug] [2026-03-16T18:06:38.098Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/seo-toolkit-885bc/webApps/-/config {"projectId":"seo-toolkit-885bc","appId":"1:1079446487444:web:ded2c7501167062443cf81","storageBucket":"seo-toolkit-885bc.firebasestorage.app","apiKey":"AIzaSyDsOpQ6EBQfumR0bNnaq-yX7EIAD4nI7Co","authDomain":"seo-toolkit-885bc.firebaseapp.com","messagingSenderId":"1079446487444","measurementId":"G-T0R8MB03Z0","projectNumber":"1079446487444","version":"2"}
+[info] 
+   Thank you for trying our early preview of Next.js support on Firebase Hosting.
+   During the preview, support is best-effort and breaking changes can be expected. Proceed with caution.
+   The integration is known to work with Next.js version 12 - 15.0. You may encounter errors.
+
+   Documentation: https://firebase.google.com/docs/hosting/frameworks/nextjs
+   File a bug: https://github.com/firebase/firebase-tools/issues/new?template=bug_report.md
+   Submit a feature request: https://github.com/firebase/firebase-tools/issues/new?template=feature_request.md
+
+   We'd love to learn from you. Express your interest in helping us shape the future of Firebase Hosting: https://goo.gle/41enW5X
+
+[debug] [2026-03-16T18:06:44.949Z] Checked if tokens are valid: true, expires at: 1773687989431
+[debug] [2026-03-16T18:06:44.949Z] Checked if tokens are valid: true, expires at: 1773687989431
+[debug] [2026-03-16T18:06:44.949Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/seo-toolkit-885bc/sites/seo-toolkit-885bc [none]
+[debug] [2026-03-16T18:06:45.738Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/seo-toolkit-885bc/sites/seo-toolkit-885bc 200
+[debug] [2026-03-16T18:06:45.739Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/seo-toolkit-885bc/sites/seo-toolkit-885bc {"name":"projects/seo-toolkit-885bc/sites/seo-toolkit-885bc","defaultUrl":"https://seo-toolkit-885bc.web.app","type":"DEFAULT_SITE"}
+[info] unhandledRejection Error: Inspector is not available
+    at Module.require (pkg/prelude/bootstrap.js:1855:31) {
+  code: 'ERR_INSPECTOR_NOT_AVAILABLE'
+}
+
+[info] Building a Cloud Function to run this application. This is needed due to:
+[info]  • non-static component /api/stripe/checkout/route
+[info]  • non-static component /api/stripe/webhook/route
+[info]  • non-static component /api/tools/tags/route
+[info]  • non-static component /api/tools/tags/validate/route
+[info]  • non-static component /api/tools/titles/route
+[debug] [2026-03-16T18:06:47.200Z]  • non-static component /api/tools/titles/validate/route
+[info]  • and 1 other reasons, use --debug to see more
+[info] 
+[debug] [2026-03-16T18:06:47.665Z] Checked if tokens are valid: true, expires at: 1773687989431
+[debug] [2026-03-16T18:06:47.665Z] Checked if tokens are valid: true, expires at: 1773687989431
+[debug] [2026-03-16T18:06:47.665Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/seo-toolkit-885bc/sites/seo-toolkit-885bc [none]
+[debug] [2026-03-16T18:06:48.362Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/seo-toolkit-885bc/sites/seo-toolkit-885bc 200
+[debug] [2026-03-16T18:06:48.362Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/seo-toolkit-885bc/sites/seo-toolkit-885bc {"name":"projects/seo-toolkit-885bc/sites/seo-toolkit-885bc","defaultUrl":"https://seo-toolkit-885bc.web.app","type":"DEFAULT_SITE"}
+[debug] [2026-03-16T18:11:30.734Z] Error: Command failed: npm i --omit dev --no-audit
+    at genericNodeError (node:internal/errors:984:15)
+    at wrappedFn (node:internal/errors:538:14)
+    at checkExecSyncError (node:child_process:891:11)
+    at Object.execSync (node:child_process:963:15)
+    at execSync (pkg/prelude/bootstrap.js:2120:30)
+    at prepareFrameworks (C:\Users\adamj\.cache\firebase\tools\lib\node_modules\firebase-tools\lib\frameworks\index.js:373:42)
+    at async deploy (C:\Users\adamj\.cache\firebase\tools\lib\node_modules\firebase-tools\lib\deploy\index.js:78:9)
+[error] 
+[error] Error: An unexpected error has occurred.
