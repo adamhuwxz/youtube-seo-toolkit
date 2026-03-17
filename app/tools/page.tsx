@@ -44,10 +44,10 @@ const tools: Tool[] = [
   {
     name: "Description Generator",
     description:
-      "Generate an SEO description using validated keyword intent.",
+      "Use your top keyword from the Tags tool to generate accurate, SEO-focused YouTube descriptions.",
     icon: FileText,
     href: "/tools/descriptions",
-    status: "coming",
+    status: "live",
   },
   {
     name: "Script Outline Generator",
