@@ -8,9 +8,11 @@ import {
   LogOut,
   CreditCard,
   Coins,
+  Wrench,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { doc, onSnapshot } from "firebase/firestore";
+import { useRouter } from "next/navigation";
 
 import { useAuth } from "@/components/providers/AuthProvider";
 import { logOut } from "@/lib/auth";
@@ -21,11 +23,14 @@ type UserDoc = {
 };
 
 export default function Navbar() {
+  const router = useRouter();
   const { user, loading } = useAuth();
   const [credits, setCredits] = useState<number | null>(null);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
     if (loading || !user) {
+      setCredits(null);
       return;
     }
 
@@ -58,6 +63,18 @@ export default function Navbar() {
     return () => unsubscribe();
   }, [user, loading]);
 
+  async function handleLogout() {
+    try {
+      setLoggingOut(true);
+      await logOut();
+      router.push("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      setLoggingOut(false);
+    }
+  }
+
   return (
     <motion.header
       initial={{ y: -18, opacity: 0 }}
@@ -73,10 +90,10 @@ export default function Navbar() {
 
           <div className="min-w-0">
             <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/45">
-              Creator Toolkit
+              Creator Tools
             </p>
             <h1 className="truncate text-base font-semibold tracking-tight text-white md:text-lg">
-              YouTube SEO Toolkit
+              SEOTube
             </h1>
           </div>
         </Link>
@@ -89,13 +106,6 @@ export default function Navbar() {
             Home
           </Link>
 
-          <Link
-            href="/pricing"
-            className="text-sm text-white/70 transition hover:text-white"
-          >
-            Pricing
-          </Link>
-
           {user && (
             <Link
               href="/tools"
@@ -104,6 +114,13 @@ export default function Navbar() {
               Tools
             </Link>
           )}
+
+          <Link
+            href="/pricing"
+            className="text-sm text-white/70 transition hover:text-white"
+          >
+            Pricing
+          </Link>
         </nav>
 
         <div className="flex items-center gap-2 md:gap-3">
@@ -127,6 +144,14 @@ export default function Navbar() {
               </div>
 
               <Link
+                href="/tools"
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#1f1f1f] px-3 py-2 text-sm font-medium text-white transition hover:bg-[#2a2a2a] md:px-4"
+              >
+                <Wrench className="h-4 w-4" />
+                <span className="hidden sm:inline">Tools</span>
+              </Link>
+
+              <Link
                 href="/pricing"
                 className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#1f1f1f] px-3 py-2 text-sm font-medium text-white transition hover:bg-[#2a2a2a] md:px-4"
               >
@@ -135,11 +160,14 @@ export default function Navbar() {
               </Link>
 
               <button
-                onClick={() => logOut()}
-                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#1f1f1f] px-3 py-2 text-sm font-medium text-white transition hover:bg-[#2a2a2a] md:px-4"
+                onClick={handleLogout}
+                disabled={loggingOut}
+                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#1f1f1f] px-3 py-2 text-sm font-medium text-white transition hover:bg-[#2a2a2a] disabled:cursor-not-allowed disabled:opacity-60 md:px-4"
               >
                 <LogOut className="h-4 w-4" />
-                <span className="hidden sm:inline">Logout</span>
+                <span className="hidden sm:inline">
+                  {loggingOut ? "Logging out..." : "Logout"}
+                </span>
               </button>
             </>
           ) : (

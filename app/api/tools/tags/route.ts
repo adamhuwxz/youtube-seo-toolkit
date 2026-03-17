@@ -58,6 +58,7 @@ Rules:
 - Do not generate generic filler tags unless clearly relevant.
 - Keep tags realistic for YouTube SEO.
 - Prioritize discoverability and coverage of related search intent.
+- Note it is 2026 don't use any other dates.
 
 Seed keyword: ${seedKeyword}
 `;

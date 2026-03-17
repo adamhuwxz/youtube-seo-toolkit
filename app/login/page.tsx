@@ -25,7 +25,7 @@ export default function LoginPage() {
 
   useEffect(() => {
     if (!authLoading && user) {
-      router.replace("/workflow");
+      router.replace("/");
     }
   }, [authLoading, user, router]);
 
@@ -34,7 +34,7 @@ export default function LoginPage() {
       setLoading(true);
       setError("");
       await signInWithGoogle();
-      router.push("/workflow");
+      router.push("/");
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -59,7 +59,7 @@ export default function LoginPage() {
         await signInWithEmail(email, password);
       }
 
-      router.push("/workflow");
+      router.push("/");
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -104,19 +104,19 @@ export default function LoginPage() {
             </div>
 
             <h1 className="mt-5 max-w-2xl text-4xl font-semibold tracking-tight text-white xl:text-5xl">
-              Sign in to use your YouTube SEO tools.
+              Sign in to access your YouTube SEO tools.
             </h1>
 
             <p className="mt-5 max-w-2xl text-base leading-8 text-white/60">
-              Access keyword stacking, title generation, validation tools, and
-              your full SEO workflow in one place.
+              Get access to title ideas, tag generation, descriptions, scripts,
+              and other focused creator tools built to save time.
             </p>
 
             <div className="mt-8 grid max-w-xl gap-3 sm:grid-cols-2">
               {[
-                "Keyword stacking tools",
-                "Title & tag validation",
-                "Creator workflow access",
+                "AI title generation",
+                "Tag and keyword tools",
+                "Description and script help",
                 "Credits and plan tracking",
               ].map((item) => (
                 <div
@@ -147,14 +147,14 @@ export default function LoginPage() {
                 </h2>
 
                 <p className="mt-2 text-sm leading-7 text-white/60">
-                  Sign in to access the workflow and creator tools.
+                  Sign in to access your creator dashboard and SEO tools.
                 </p>
               </div>
 
               <button
                 onClick={handleGoogle}
                 disabled={loading}
-                className="flex w-full items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white px-4 py-3 text-sm font-semibold text-black transition hover:bg-white/90 disabled:opacity-60"
+                className="flex w-full items-center justify-center gap-3 rounded-2xl border border-white/10 bg-white px-4 py-3 text-sm font-semibold text-black transition hover:bg-white/90 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 <Chrome className="h-4 w-4" />
                 Continue with Google
@@ -180,6 +180,7 @@ export default function LoginPage() {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
+                      autoComplete="email"
                       className="w-full bg-transparent text-white outline-none placeholder:text-white/30"
                       placeholder="you@example.com"
                     />
@@ -197,8 +198,15 @@ export default function LoginPage() {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
+                      autoComplete={
+                        mode === "login" ? "current-password" : "new-password"
+                      }
                       className="w-full bg-transparent text-white outline-none placeholder:text-white/30"
-                      placeholder="Enter your password"
+                      placeholder={
+                        mode === "login"
+                          ? "Enter your password"
+                          : "Create a password"
+                      }
                     />
                   </div>
                 </div>
@@ -212,7 +220,7 @@ export default function LoginPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full rounded-2xl bg-[#ff0033] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#e0002d] disabled:opacity-60"
+                  className="w-full rounded-2xl bg-[#ff0033] px-4 py-3 text-sm font-semibold text-white transition hover:bg-[#e0002d] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   {loading
                     ? "Please wait..."
@@ -227,7 +235,8 @@ export default function LoginPage() {
                   setMode(mode === "login" ? "signup" : "login");
                   setError("");
                 }}
-                className="mt-5 text-sm font-medium text-red-300 transition hover:text-red-200"
+                disabled={loading}
+                className="mt-5 text-sm font-medium text-red-300 transition hover:text-red-200 disabled:cursor-not-allowed disabled:opacity-60"
               >
                 {mode === "login"
                   ? "Need an account? Create one"

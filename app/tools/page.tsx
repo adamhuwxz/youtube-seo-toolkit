@@ -10,7 +10,6 @@ import {
   FileText,
   ListOrdered,
   Search,
-  Sparkles,
   Lock,
 } from "lucide-react";
 
@@ -23,7 +22,7 @@ type Tool = {
   description: string;
   icon: LucideIcon;
   href: string;
-  status: "live" | "coming" | "advanced";
+  status: "live" | "coming";
 };
 
 const tools: Tool[] = [
@@ -37,8 +36,7 @@ const tools: Tool[] = [
   },
   {
     name: "Tag Generator",
-    description:
-      "Create a clean list of SEO-focused YouTube tags in seconds.",
+    description: "Create a clean list of SEO-focused YouTube tags in seconds.",
     icon: Tags,
     href: "/tools/tags",
     status: "live",
@@ -67,14 +65,6 @@ const tools: Tool[] = [
     href: "/tools/keywords",
     status: "coming",
   },
-  {
-    name: "Full SEO Pack",
-    description:
-      "Generate titles, tags, description and script outline together.",
-    icon: Sparkles,
-    href: "/workflow",
-    status: "advanced",
-  },
 ];
 
 export default function ToolsPage() {
@@ -89,10 +79,10 @@ export default function ToolsPage() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#050816] text-white">
+      <main className="min-h-screen bg-[#0f0f0f] text-white">
         <Navbar />
-        <section className="mx-auto max-w-6xl px-6 py-24">
-          <div className="rounded-[24px] border border-white/10 bg-white/5 p-6 text-white/70">
+        <section className="mx-auto max-w-6xl px-4 py-12 md:px-6 md:py-16">
+          <div className="rounded-3xl border border-white/10 bg-[#1f1f1f] p-6 text-white/70">
             Checking account...
           </div>
         </section>
@@ -109,55 +99,62 @@ export default function ToolsPage() {
     switch (status) {
       case "live":
         return (
-          <span className="rounded-full bg-green-400/15 px-3 py-1 text-xs text-green-300">
+          <span className="rounded-full bg-green-500/15 px-3 py-1 text-xs font-medium text-green-300">
             Live
           </span>
         );
       case "coming":
         return (
-          <span className="rounded-full bg-white/5 px-3 py-1 text-xs text-white/50">
+          <span className="rounded-full border border-white/10 bg-[#121212] px-3 py-1 text-xs font-medium text-white/50">
             Coming Soon
-          </span>
-        );
-      case "advanced":
-        return (
-          <span className="rounded-full bg-cyan-400/15 px-3 py-1 text-xs text-cyan-200">
-            Advanced
           </span>
         );
     }
   }
 
   return (
-    <main className="min-h-screen bg-[#050816] text-white">
+    <main className="min-h-screen bg-[#0f0f0f] text-white">
       <Navbar />
 
-      <section className="mx-auto max-w-6xl px-6 py-24">
-        <h1 className="text-4xl font-semibold">Creator Tools</h1>
+      <section className="relative mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16">
+        <div className="pointer-events-none absolute inset-0 -z-10">
+          <div className="absolute left-1/2 top-0 h-[420px] w-[420px] -translate-x-1/2 rounded-full bg-red-600/10 blur-3xl" />
+        </div>
 
-        <p className="mt-4 max-w-2xl text-white/65">
-          Generate exactly what you need for your YouTube video without running
-          a large workflow every time.
-        </p>
+        <div className="max-w-3xl">
+          <div className="inline-flex items-center gap-2 rounded-full border border-red-500/20 bg-red-500/10 px-3 py-1 text-xs font-medium uppercase tracking-[0.18em] text-red-300">
+            Creator Tools
+          </div>
 
-        <div className="mt-8 rounded-[24px] border border-cyan-400/20 bg-cyan-400/10 p-5">
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-cyan-200">
-            Faster workflow
-          </p>
+          <h1 className="mt-4 text-3xl font-semibold tracking-tight md:text-5xl">
+            Focused tools for faster YouTube SEO
+          </h1>
 
-          <p className="mt-3 text-sm leading-7 text-cyan-100/85">
-            Most creators only need one result at a time — titles, tags,
-            descriptions or keywords. These tools keep things simple and fast.
+          <p className="mt-4 max-w-2xl text-sm text-white/60 md:text-base">
+            Generate exactly what you need for your video with individual tools
+            for titles, tags, descriptions, outlines and keyword research.
           </p>
         </div>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-8 rounded-3xl border border-red-500/20 bg-red-500/10 p-5">
+          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-red-300">
+            Built for speed
+          </p>
+
+          <p className="mt-3 text-sm leading-7 text-white/75">
+            Most creators do not need one giant workflow every time. These tools
+            are designed to help you move faster, stay focused and generate only
+            the parts you actually need.
+          </p>
+        </div>
+
+        <div className="mt-10 grid gap-6 md:grid-cols-2 xl:grid-cols-3">
           {tools.map((tool) => {
             const Icon = tool.icon;
 
             const content = (
-              <div className="group rounded-[24px] border border-white/10 bg-white/5 p-6 transition hover:border-cyan-400/30 hover:bg-white/[0.07]">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-cyan-400/15 text-cyan-200">
+              <div className="group rounded-3xl border border-white/10 bg-[#1f1f1f] p-6 transition hover:border-red-500/30 hover:bg-[#242424]">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-red-500/10 text-red-300">
                   <Icon className="h-5 w-5" />
                 </div>
 
@@ -175,7 +172,7 @@ export default function ToolsPage() {
                   </p>
                 </div>
 
-                <div className="mt-6 text-sm font-medium text-cyan-300 transition group-hover:text-cyan-200">
+                <div className="mt-6 text-sm font-medium text-red-300 transition group-hover:text-red-200">
                   {tool.status === "live" ? "Open tool" : "Not available yet"}
                 </div>
               </div>
@@ -183,10 +180,10 @@ export default function ToolsPage() {
 
             if (tool.status === "coming") {
               return (
-                <div key={tool.name} className="relative opacity-70">
+                <div key={tool.name} className="relative opacity-75">
                   {content}
 
-                  <div className="absolute right-5 top-5 text-white/40">
+                  <div className="absolute right-5 top-5 text-white/35">
                     <Lock size={16} />
                   </div>
                 </div>
