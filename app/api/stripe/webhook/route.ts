@@ -10,16 +10,15 @@ type UserRecord = {
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
   subscriptionStatus?: string;
-  currentPeriodEnd?: number | null;
 };
 
-function getStripeCustomerId(value: string | Stripe.Customer | Stripe.DeletedCustomer | null) {
+function getStripeCustomerId(
+  value: string | Stripe.Customer | Stripe.DeletedCustomer | null
+) {
   return typeof value === "string" ? value : value?.id ?? null;
 }
 
-function getStripeSubscriptionId(
-  value: string | Stripe.Subscription | null
-) {
+function getStripeSubscriptionId(value: string | Stripe.Subscription | null) {
   return typeof value === "string" ? value : value?.id ?? null;
 }
 
@@ -55,7 +54,6 @@ async function updateUserFromPlan(args: {
   customerId?: string | null;
   subscriptionId?: string | null;
   subscriptionStatus?: string | null;
-  currentPeriodEnd?: number | null;
 }) {
   const matchedPlan = getStripePlanByPriceId(args.priceId);
 
@@ -75,7 +73,6 @@ async function updateUserFromPlan(args: {
       stripeCustomerId: args.customerId ?? "",
       stripeSubscriptionId: args.subscriptionId ?? "",
       subscriptionStatus: args.subscriptionStatus ?? "active",
-      currentPeriodEnd: args.currentPeriodEnd ?? null,
     },
     { merge: true }
   );
@@ -121,7 +118,9 @@ export async function POST(req: Request) {
             : "";
 
       const customerId = getStripeCustomerId(session.customer ?? null);
-      const subscriptionId = getStripeSubscriptionId(session.subscription ?? null);
+      const subscriptionId = getStripeSubscriptionId(
+        session.subscription ?? null
+      );
 
       let priceId =
         typeof session.metadata?.priceId === "string"
@@ -150,7 +149,9 @@ export async function POST(req: Request) {
         typeof invoice.customer === "string" ? invoice.customer : null;
 
       const subscriptionId =
-        typeof invoice.subscription === "string" ? invoice.subscription : null;
+        typeof invoice.parent?.subscription_details?.subscription === "string"
+          ? invoice.parent.subscription_details.subscription
+          : null;
 
       if (customerId && subscriptionId) {
         const matchedUser = await findUserByStripeCustomerId(customerId);
@@ -180,10 +181,6 @@ export async function POST(req: Request) {
       const subscriptionId = subscription.id;
       const priceId = subscription.items.data[0]?.price?.id ?? null;
       const status = subscription.status;
-      const currentPeriodEnd =
-        typeof subscription.current_period_end === "number"
-          ? subscription.current_period_end
-          : null;
 
       if (customerId) {
         const matchedUser = await findUserByStripeCustomerId(customerId);
@@ -191,11 +188,13 @@ export async function POST(req: Request) {
         if (matchedUser) {
           await adminDb.collection("users").doc(matchedUser.docId).set(
             {
-              plan: getStripePlanByPriceId(priceId)?.key ?? matchedUser.data.plan ?? "starter",
+              plan:
+                getStripePlanByPriceId(priceId)?.key ??
+                matchedUser.data.plan ??
+                "starter",
               stripeCustomerId: customerId,
               stripeSubscriptionId: subscriptionId,
               subscriptionStatus: status,
-              currentPeriodEnd,
             },
             { merge: true }
           );
