@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
-import { stripe } from "@/lib/stripe";
+import {
+  stripe,
+  getStripePlanByPriceId,
+  STRIPE_PLAN_CONFIGS,
+} from "@/lib/stripe";
 
 type CheckoutRequestBody = {
   priceId?: string;
@@ -21,7 +25,26 @@ export async function POST(req: Request) {
       );
     }
 
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
+    const matchedPlan = getStripePlanByPriceId(priceId);
+
+    if (!matchedPlan) {
+      return NextResponse.json(
+        {
+          error:
+            "Invalid Stripe price ID. Check your pricing page env vars and server plan config.",
+        },
+        { status: 400 }
+      );
+    }
+
+    if (STRIPE_PLAN_CONFIGS.length === 0) {
+      return NextResponse.json(
+        { error: "No Stripe plans are configured on the server." },
+        { status: 500 }
+      );
+    }
+
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
 
     if (!siteUrl) {
       return NextResponse.json(
@@ -35,17 +58,26 @@ export async function POST(req: Request) {
       payment_method_types: ["card"],
       line_items: [
         {
-          price: priceId,
+          price: matchedPlan.priceId,
           quantity: 1,
         },
       ],
       success_url: `${siteUrl}/tools?checkout=success`,
       cancel_url: `${siteUrl}/pricing?checkout=cancelled`,
+      allow_promotion_codes: true,
+      client_reference_id: userId,
       metadata: {
         userId,
-        priceId,
+        priceId: matchedPlan.priceId,
+        plan: matchedPlan.key,
       },
-      allow_promotion_codes: true,
+      subscription_data: {
+        metadata: {
+          userId,
+          priceId: matchedPlan.priceId,
+          plan: matchedPlan.key,
+        },
+      },
     });
 
     if (!session.url) {
@@ -62,7 +94,10 @@ export async function POST(req: Request) {
     console.error("Stripe checkout failed:", error);
 
     return NextResponse.json(
-      { error: "Checkout failed." },
+      {
+        error:
+          error instanceof Error ? error.message : "Checkout failed.",
+      },
       { status: 500 }
     );
   }

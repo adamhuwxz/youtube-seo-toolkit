@@ -1,15 +1,7 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import {
-  collection,
-  doc,
-  getDocs,
-  query,
-  updateDoc,
-  where,
-} from "firebase/firestore";
-import { db } from "@/lib/firebase";
-import { stripe } from "@/lib/stripe";
+import { stripe, getStripePlanByPriceId } from "@/lib/stripe";
+import { adminDb } from "@/lib/firebase-admin";
 
 type UserRecord = {
   plan?: string;
@@ -17,30 +9,29 @@ type UserRecord = {
   monthlyCredits?: number;
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
+  subscriptionStatus?: string;
+  currentPeriodEnd?: number | null;
 };
 
-function getCreditsFromPriceId(priceId: string | null | undefined) {
-  if (!priceId) return 30;
-
-  if (priceId === process.env.STRIPE_PRICE_GROWTH) return 100;
-  if (priceId === process.env.STRIPE_PRICE_PRO) return 200;
-
-  return 30;
+function getStripeCustomerId(value: string | Stripe.Customer | Stripe.DeletedCustomer | null) {
+  return typeof value === "string" ? value : value?.id ?? null;
 }
 
-function getPlanFromPriceId(priceId: string | null | undefined) {
-  if (priceId === process.env.STRIPE_PRICE_GROWTH) return "growth";
-  if (priceId === process.env.STRIPE_PRICE_PRO) return "pro";
-  return "starter";
+function getStripeSubscriptionId(
+  value: string | Stripe.Subscription | null
+) {
+  return typeof value === "string" ? value : value?.id ?? null;
 }
 
 async function findUserByStripeCustomerId(customerId: string): Promise<{
   docId: string;
   data: UserRecord;
 } | null> {
-  const usersRef = collection(db, "users");
-  const q = query(usersRef, where("stripeCustomerId", "==", customerId));
-  const snap = await getDocs(q);
+  const snap = await adminDb
+    .collection("users")
+    .where("stripeCustomerId", "==", customerId)
+    .limit(1)
+    .get();
 
   if (snap.empty) return null;
 
@@ -53,14 +44,47 @@ async function findUserByStripeCustomerId(customerId: string): Promise<{
   };
 }
 
-async function getPriceIdFromSubscription(subscriptionId: string) {
+async function getSubscriptionPriceId(subscriptionId: string) {
   const subscription = await stripe.subscriptions.retrieve(subscriptionId);
   return subscription.items.data[0]?.price?.id ?? null;
+}
+
+async function updateUserFromPlan(args: {
+  userId: string;
+  priceId: string | null;
+  customerId?: string | null;
+  subscriptionId?: string | null;
+  subscriptionStatus?: string | null;
+  currentPeriodEnd?: number | null;
+}) {
+  const matchedPlan = getStripePlanByPriceId(args.priceId);
+
+  if (!matchedPlan) {
+    throw new Error(
+      `No Stripe plan config found for priceId: ${args.priceId ?? "null"}`
+    );
+  }
+
+  const userRef = adminDb.collection("users").doc(args.userId);
+
+  await userRef.set(
+    {
+      plan: matchedPlan.key,
+      credits: matchedPlan.credits,
+      monthlyCredits: matchedPlan.credits,
+      stripeCustomerId: args.customerId ?? "",
+      stripeSubscriptionId: args.subscriptionId ?? "",
+      subscriptionStatus: args.subscriptionStatus ?? "active",
+      currentPeriodEnd: args.currentPeriodEnd ?? null,
+    },
+    { merge: true }
+  );
 }
 
 export async function POST(req: Request) {
   const body = await req.text();
   const signature = req.headers.get("stripe-signature");
+  const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET?.trim();
 
   if (!signature) {
     return NextResponse.json(
@@ -69,15 +93,19 @@ export async function POST(req: Request) {
     );
   }
 
+  if (!webhookSecret) {
+    return NextResponse.json(
+      { error: "Missing STRIPE_WEBHOOK_SECRET." },
+      { status: 500 }
+    );
+  }
+
   let event: Stripe.Event;
 
   try {
-    event = stripe.webhooks.constructEvent(
-      body,
-      signature,
-      process.env.STRIPE_WEBHOOK_SECRET!
-    );
-  } catch {
+    event = stripe.webhooks.constructEvent(body, signature, webhookSecret);
+  } catch (error) {
+    console.error("Stripe webhook signature verification failed:", error);
     return NextResponse.json({ error: "Webhook error" }, { status: 400 });
   }
 
@@ -85,59 +113,115 @@ export async function POST(req: Request) {
     if (event.type === "checkout.session.completed") {
       const session = event.data.object as Stripe.Checkout.Session;
 
-      const userId = session.metadata?.userId;
-      const customerId =
-        typeof session.customer === "string" ? session.customer : null;
-      const subscriptionId =
-        typeof session.subscription === "string" ? session.subscription : null;
+      const userId =
+        typeof session.metadata?.userId === "string"
+          ? session.metadata.userId
+          : typeof session.client_reference_id === "string"
+            ? session.client_reference_id
+            : "";
 
-      let priceId: string | null = session.metadata?.priceId ?? null;
+      const customerId = getStripeCustomerId(session.customer ?? null);
+      const subscriptionId = getStripeSubscriptionId(session.subscription ?? null);
+
+      let priceId =
+        typeof session.metadata?.priceId === "string"
+          ? session.metadata.priceId
+          : null;
 
       if (!priceId && subscriptionId) {
-        priceId = await getPriceIdFromSubscription(subscriptionId);
+        priceId = await getSubscriptionPriceId(subscriptionId);
       }
 
       if (userId) {
-        const credits = getCreditsFromPriceId(priceId);
-        const plan = getPlanFromPriceId(priceId);
-
-        const userRef = doc(db, "users", userId);
-
-        await updateDoc(userRef, {
-          plan,
-          credits,
-          monthlyCredits: credits,
-          stripeCustomerId: customerId ?? "",
-          stripeSubscriptionId: subscriptionId ?? "",
+        await updateUserFromPlan({
+          userId,
+          priceId,
+          customerId,
+          subscriptionId,
+          subscriptionStatus: "active",
         });
       }
     }
 
-    if (event.type === "invoice.payment_succeeded") {
+    if (event.type === "invoice.paid") {
       const invoice = event.data.object as Stripe.Invoice;
 
       const customerId =
         typeof invoice.customer === "string" ? invoice.customer : null;
 
+      const subscriptionId =
+        typeof invoice.subscription === "string" ? invoice.subscription : null;
+
+      if (customerId && subscriptionId) {
+        const matchedUser = await findUserByStripeCustomerId(customerId);
+
+        if (matchedUser) {
+          const priceId = await getSubscriptionPriceId(subscriptionId);
+
+          await updateUserFromPlan({
+            userId: matchedUser.docId,
+            priceId,
+            customerId,
+            subscriptionId,
+            subscriptionStatus: "active",
+          });
+        }
+      }
+    }
+
+    if (event.type === "customer.subscription.updated") {
+      const subscription = event.data.object as Stripe.Subscription;
+
+      const customerId =
+        typeof subscription.customer === "string"
+          ? subscription.customer
+          : null;
+
+      const subscriptionId = subscription.id;
+      const priceId = subscription.items.data[0]?.price?.id ?? null;
+      const status = subscription.status;
+      const currentPeriodEnd =
+        typeof subscription.current_period_end === "number"
+          ? subscription.current_period_end
+          : null;
+
       if (customerId) {
         const matchedUser = await findUserByStripeCustomerId(customerId);
 
         if (matchedUser) {
-          const subscriptionId = matchedUser.data.stripeSubscriptionId ?? "";
+          await adminDb.collection("users").doc(matchedUser.docId).set(
+            {
+              plan: getStripePlanByPriceId(priceId)?.key ?? matchedUser.data.plan ?? "starter",
+              stripeCustomerId: customerId,
+              stripeSubscriptionId: subscriptionId,
+              subscriptionStatus: status,
+              currentPeriodEnd,
+            },
+            { merge: true }
+          );
+        }
+      }
+    }
 
-          if (subscriptionId) {
-            const priceId = await getPriceIdFromSubscription(subscriptionId);
-            const credits = getCreditsFromPriceId(priceId);
-            const plan = getPlanFromPriceId(priceId);
+    if (event.type === "customer.subscription.deleted") {
+      const subscription = event.data.object as Stripe.Subscription;
 
-            const userRef = doc(db, "users", matchedUser.docId);
+      const customerId =
+        typeof subscription.customer === "string"
+          ? subscription.customer
+          : null;
 
-            await updateDoc(userRef, {
-              credits,
-              monthlyCredits: credits,
-              plan,
-            });
-          }
+      if (customerId) {
+        const matchedUser = await findUserByStripeCustomerId(customerId);
+
+        if (matchedUser) {
+          await adminDb.collection("users").doc(matchedUser.docId).set(
+            {
+              subscriptionStatus: "cancelled",
+              stripeSubscriptionId: subscription.id,
+            },
+            { merge: true }
+          );
         }
       }
     }
@@ -147,7 +231,12 @@ export async function POST(req: Request) {
     console.error("Stripe webhook handler failed:", error);
 
     return NextResponse.json(
-      { error: "Webhook handler failed." },
+      {
+        error:
+          error instanceof Error
+            ? error.message
+            : "Webhook handler failed.",
+      },
       { status: 500 }
     );
   }
