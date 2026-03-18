@@ -63,7 +63,7 @@ const tools: Tool[] = [
       "Find strong keyword opportunities ranked by search demand.",
     icon: Search,
     href: "/tools/keywords",
-    status: "coming",
+    status: "live",
   },
 ];
 
