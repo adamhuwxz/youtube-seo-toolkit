@@ -11,6 +11,8 @@ import {
   ListOrdered,
   Search,
   Lock,
+  Layers3,
+  Youtube,
 } from "lucide-react";
 
 import Navbar from "@/components/layout/Navbar";
@@ -35,6 +37,14 @@ const tools: Tool[] = [
     status: "live",
   },
   {
+    name: "Keyword Finder",
+    description:
+      "Find strong keyword opportunities ranked by search demand.",
+    icon: Search,
+    href: "/tools/keywords",
+    status: "live",
+  },
+  {
     name: "Tag Generator",
     description: "Create a clean list of SEO-focused YouTube tags in seconds.",
     icon: Tags,
@@ -50,20 +60,28 @@ const tools: Tool[] = [
     status: "live",
   },
   {
+    name: "Transcript to Script",
+    description:
+      "Fetch a YouTube transcript, then rewrite it into a short, cleaner video script.",
+    icon: Youtube,
+    href: "/tools/transcript",
+    status: "live",
+  },
+  {
+    name: "Search Intent Coverage",
+    description:
+      "Map the main YouTube search intents around a keyword and validate the best opportunities in each angle.",
+    icon: Layers3,
+    href: "/tools/search-intent",
+    status: "live",
+  },
+  {
     name: "Script Outline Generator",
     description:
       "Turn a video idea into a simple outline ready for recording.",
     icon: ListOrdered,
     href: "/tools/script-outline",
     status: "coming",
-  },
-  {
-    name: "Keyword Finder",
-    description:
-      "Find strong keyword opportunities ranked by search demand.",
-    icon: Search,
-    href: "/tools/keywords",
-    status: "live",
   },
 ];
 

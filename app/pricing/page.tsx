@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Check, CreditCard, Sparkles } from "lucide-react";
@@ -57,7 +58,10 @@ const plans: Plan[] = [
 
 export default function PricingPage() {
   const { user } = useAuth();
+  const searchParams = useSearchParams();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
+
+  const checkoutStatus = searchParams.get("checkout");
 
   async function handleCheckout(priceId: string, planName: string) {
     if (!user) {
@@ -128,6 +132,18 @@ export default function PricingPage() {
             be used across your SEO tools.
           </p>
         </div>
+
+        {checkoutStatus === "cancelled" && (
+          <div className="mx-auto mt-6 max-w-3xl rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">
+            Payment was cancelled. No subscription was created.
+          </div>
+        )}
+
+        {checkoutStatus === "success" && (
+          <div className="mx-auto mt-6 max-w-3xl rounded-2xl border border-green-500/20 bg-green-500/10 px-4 py-3 text-sm text-green-200">
+            Payment successful. Your subscription is being activated.
+          </div>
+        )}
 
         <div className="mt-10 grid gap-6 xl:grid-cols-3">
           {plans.map((plan) => {
