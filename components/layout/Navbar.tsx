@@ -130,7 +130,7 @@ export default function Navbar() {
             </div>
           ) : user ? (
             <>
-              <div className="hidden items-center gap-3 rounded-full border border-white/10 bg-[#1f1f1f] px-4 py-2 text-sm text-white/75 xl:flex">
+              <div className="flex items-center gap-3 rounded-full border border-white/10 bg-[#1f1f1f] px-4 py-2 text-sm text-white/75">
                 <span className="max-w-[180px] truncate">
                   {user.displayName || user.email}
                 </span>
