@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
-import { db } from "@/lib/firebase";
-import { doc, getDoc, updateDoc, increment } from "firebase/firestore";
+import { adminAuth } from "@/lib/firebase-admin";
+import { consumeCredits } from "@/lib/server/credits";
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -11,47 +11,49 @@ type RequestBody = {
   primaryKeyword?: string;
   context?: string;
   secondaryKeywords?: string;
-  userId?: string;
+};
+
+type DescriptionResponse = {
+  descriptions: string[];
 };
 
 export async function POST(req: Request) {
   try {
+    const authHeader = req.headers.get("authorization");
+
+    if (!authHeader?.startsWith("Bearer ")) {
+      return NextResponse.json(
+        { error: "Missing authorization token." },
+        { status: 401 }
+      );
+    }
+
+    const idToken = authHeader.replace("Bearer ", "").trim();
+    const decoded = await adminAuth.verifyIdToken(idToken);
+    const uid = decoded.uid;
+
     const body = (await req.json()) as RequestBody;
 
-    const primaryKeyword = body.primaryKeyword?.trim();
-    const context = body.context?.trim();
-    const secondaryKeywords = body.secondaryKeywords?.trim();
-    const userId = body.userId;
+    const primaryKeyword =
+      typeof body.primaryKeyword === "string" ? body.primaryKeyword.trim() : "";
 
-    if (!primaryKeyword || !context || !userId) {
+    const context =
+      typeof body.context === "string" ? body.context.trim() : "";
+
+    const secondaryKeywords =
+      typeof body.secondaryKeywords === "string"
+        ? body.secondaryKeywords.trim()
+        : "";
+
+    if (!primaryKeyword || !context) {
       return NextResponse.json(
         { error: "Missing required fields." },
         { status: 400 }
       );
     }
 
-    // 🔐 CHECK USER TOKENS
-    const userRef = doc(db, "users", userId);
-    const userSnap = await getDoc(userRef);
+    const creditResult = await consumeCredits(uid, 1);
 
-    if (!userSnap.exists()) {
-      return NextResponse.json(
-        { error: "User not found." },
-        { status: 404 }
-      );
-    }
-
-    const userData = userSnap.data();
-    const credits = userData.credits ?? 0;
-
-    if (credits < 1) {
-      return NextResponse.json(
-        { error: "Not enough credits." },
-        { status: 403 }
-      );
-    }
-
-    // 🧠 AI PROMPT
     const prompt = `
 You are a YouTube SEO expert.
 
@@ -59,7 +61,7 @@ Write 3 different YouTube video descriptions.
 
 RULES:
 - Use the primary keyword naturally: "${primaryKeyword}"
-- Use these secondary keywords if relevant: "${secondaryKeywords || ""}"
+- Use these secondary keywords if relevant: "${secondaryKeywords}"
 - Base the content ONLY on this context/transcript:
 ${context}
 
@@ -69,7 +71,8 @@ ${context}
 - Avoid keyword stuffing
 - Write naturally like a real creator
 
-OUTPUT FORMAT (JSON ONLY):
+Return ONLY valid JSON.
+Use this exact shape:
 {
   "descriptions": [
     "Description 1",
@@ -79,31 +82,68 @@ OUTPUT FORMAT (JSON ONLY):
 }
 `;
 
-    const response = await openai.chat.completions.create({
+    const completion = await openai.chat.completions.create({
       model: "gpt-4.1-mini",
-      messages: [{ role: "user", content: prompt }],
+      messages: [
+        {
+          role: "system",
+          content:
+            "You generate high-quality YouTube descriptions and return strict JSON only.",
+        },
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
       temperature: 0.7,
     });
 
-    const content = response.choices[0]?.message?.content;
+    const raw = completion.choices[0]?.message?.content ?? "";
 
-    if (!content) {
-      throw new Error("No AI response");
+    let parsed: DescriptionResponse;
+
+    try {
+      parsed = JSON.parse(raw) as DescriptionResponse;
+    } catch {
+      console.error("Failed to parse description generator JSON:", raw);
+      return NextResponse.json(
+        { error: "AI returned invalid JSON." },
+        { status: 500 }
+      );
     }
 
-    const parsed = JSON.parse(content);
+    const cleanedDescriptions = Array.isArray(parsed.descriptions)
+      ? parsed.descriptions
+          .map((desc) => (typeof desc === "string" ? desc.trim() : ""))
+          .filter(Boolean)
+          .slice(0, 3)
+      : [];
 
-    // 💰 DEDUCT TOKEN
-    await updateDoc(userRef, {
-      credits: increment(-1),
+    if (cleanedDescriptions.length === 0) {
+      return NextResponse.json(
+        { error: "No descriptions were generated." },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json({
+      descriptions: cleanedDescriptions,
+      creditsRemaining: creditResult.remainingCredits,
     });
-
-    return NextResponse.json(parsed);
   } catch (error) {
-    console.error("Description generation error:", error);
-    return NextResponse.json(
-      { error: "Failed to generate descriptions." },
-      { status: 500 }
-    );
+    console.error("Description generation failed:", error);
+
+    const message =
+      error instanceof Error ? error.message : "Description generator failed.";
+
+    if (message === "Not enough credits.") {
+      return NextResponse.json({ error: message }, { status: 402 });
+    }
+
+    if (message.toLowerCase().includes("id token")) {
+      return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
+    }
+
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

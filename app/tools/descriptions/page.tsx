@@ -16,6 +16,7 @@ export default function DescriptionsPage() {
   const [results, setResults] = useState<string[]>([]);
   const [loadingGen, setLoadingGen] = useState(false);
   const [error, setError] = useState("");
+  const [creditsRemaining, setCreditsRemaining] = useState<number | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -29,21 +30,28 @@ export default function DescriptionsPage() {
       return;
     }
 
+    if (!user) {
+      setError("You must be logged in.");
+      return;
+    }
+
     try {
       setLoadingGen(true);
       setError("");
       setResults([]);
 
+      const idToken = await user.getIdToken();
+
       const res = await fetch("/api/tools/descriptions", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          Authorization: `Bearer ${idToken}`,
         },
         body: JSON.stringify({
           primaryKeyword,
           context,
           secondaryKeywords,
-          userId: user?.uid,
         }),
       });
 
@@ -54,6 +62,9 @@ export default function DescriptionsPage() {
       }
 
       setResults(Array.isArray(data.descriptions) ? data.descriptions : []);
+      setCreditsRemaining(
+        typeof data.creditsRemaining === "number" ? data.creditsRemaining : null
+      );
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -145,6 +156,12 @@ export default function DescriptionsPage() {
               ? "Generating..."
               : "Generate Descriptions (1 token)"}
           </button>
+
+          {creditsRemaining !== null && (
+            <p className="text-sm text-white/50">
+              Credits remaining: {creditsRemaining}
+            </p>
+          )}
         </div>
 
         {results.length > 0 && (
