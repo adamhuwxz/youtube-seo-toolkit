@@ -6,12 +6,21 @@ import Footer from "@/components/layout/Footer";
 import { Check, CreditCard, Sparkles } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 
-const plans = [
+type Plan = {
+  name: string;
+  price: string;
+  tokens: number;
+  priceId: string;
+  popular?: boolean;
+  features: string[];
+};
+
+const plans: Plan[] = [
   {
     name: "Starter",
     price: "$19",
     tokens: 40,
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_STARTER!,
+    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_STARTER ?? "",
     features: [
       "40 tokens per month",
       "AI title & tag tools",
@@ -23,7 +32,7 @@ const plans = [
     name: "Growth",
     price: "$39",
     tokens: 120,
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_GROWTH!,
+    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_GROWTH ?? "",
     popular: true,
     features: [
       "120 tokens per month",
@@ -36,7 +45,7 @@ const plans = [
     name: "Pro",
     price: "$69",
     tokens: 300,
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO!,
+    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO ?? "",
     features: [
       "300 tokens per month",
       "Unlimited tool usage within tokens",
@@ -56,6 +65,11 @@ export default function PricingPage() {
       return;
     }
 
+    if (!priceId) {
+      alert(`Missing Stripe price ID for ${planName}.`);
+      return;
+    }
+
     try {
       setLoadingPlan(planName);
 
@@ -72,13 +86,18 @@ export default function PricingPage() {
 
       const data = await res.json();
 
+      if (!res.ok) {
+        alert(data.error || "Checkout failed.");
+        return;
+      }
+
       if (data.url) {
         window.location.href = data.url;
       } else {
-        alert("Checkout failed.");
+        alert("Stripe did not return a checkout URL.");
       }
     } catch (error) {
-      console.error(error);
+      console.error("Checkout error:", error);
       alert("Something went wrong.");
     } finally {
       setLoadingPlan(null);
@@ -113,6 +132,7 @@ export default function PricingPage() {
         <div className="mt-10 grid gap-6 xl:grid-cols-3">
           {plans.map((plan) => {
             const isPopular = Boolean(plan.popular);
+            const hasValidPriceId = Boolean(plan.priceId);
 
             return (
               <div
@@ -168,14 +188,18 @@ export default function PricingPage() {
 
                 <button
                   onClick={() => handleCheckout(plan.priceId, plan.name)}
-                  disabled={loadingPlan === plan.name}
-                  className={`mt-8 w-full rounded-2xl px-4 py-3 text-sm font-semibold transition disabled:opacity-60 ${
+                  disabled={loadingPlan === plan.name || !hasValidPriceId}
+                  className={`mt-8 w-full rounded-2xl px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-60 ${
                     isPopular
                       ? "bg-[#ff0033] text-white hover:bg-[#e0002d]"
                       : "border border-white/10 bg-white text-black hover:bg-white/90"
                   }`}
                 >
-                  {loadingPlan === plan.name ? "Redirecting..." : "Subscribe"}
+                  {loadingPlan === plan.name
+                    ? "Redirecting..."
+                    : hasValidPriceId
+                      ? "Subscribe"
+                      : "Plan unavailable"}
                 </button>
               </div>
             );
