@@ -11,7 +11,7 @@ const plans = [
     name: "Starter",
     price: "$19",
     tokens: 40,
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_STARTER!,
+    priceId: process.env.STRIPE_PRICE_STARTER!,
     features: [
       "40 tokens per month",
       "AI title & tag tools",
@@ -23,7 +23,7 @@ const plans = [
     name: "Growth",
     price: "$39",
     tokens: 120,
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_GROWTH!,
+    priceId: process.env.STRIPE_PRICE_GROWTH!,
     popular: true,
     features: [
       "120 tokens per month",
@@ -36,7 +36,7 @@ const plans = [
     name: "Pro",
     price: "$69",
     tokens: 300,
-    priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO!,
+    priceId: process.env.STRIPE_PRICE_PRO!,
     features: [
       "300 tokens per month",
       "Unlimited tool usage within tokens",
