@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -56,7 +56,7 @@ const plans: Plan[] = [
   },
 ];
 
-export default function PricingPage() {
+function PricingPageContent() {
   const { user } = useAuth();
   const searchParams = useSearchParams();
   const [loadingPlan, setLoadingPlan] = useState<string | null>(null);
@@ -230,5 +230,25 @@ export default function PricingPage() {
 
       <Footer />
     </main>
+  );
+}
+
+export default function PricingPage() {
+  return (
+    <Suspense
+      fallback={
+        <main className="min-h-screen bg-[#0f0f0f] text-white">
+          <Navbar />
+          <section className="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16">
+            <div className="rounded-3xl border border-white/10 bg-[#1f1f1f] p-6 text-white/70">
+              Loading pricing...
+            </div>
+          </section>
+          <Footer />
+        </main>
+      }
+    >
+      <PricingPageContent />
+    </Suspense>
   );
 }

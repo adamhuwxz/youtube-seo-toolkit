@@ -35,7 +35,6 @@ export default function KeywordsPage() {
 
   const [bestKeyword, setBestKeyword] = useState<RankedKeyword | null>(null);
   const [top5, setTop5] = useState<RankedKeyword[]>([]);
-  const [top10, setTop10] = useState<RankedKeyword[]>([]);
   const [rankedKeywords, setRankedKeywords] = useState<RankedKeyword[]>([]);
 
   useEffect(() => {
@@ -67,7 +66,6 @@ export default function KeywordsPage() {
       setError("");
       setBestKeyword(null);
       setTop5([]);
-      setTop10([]);
       setRankedKeywords([]);
 
       const idToken = await user.getIdToken();
@@ -92,7 +90,6 @@ export default function KeywordsPage() {
 
       setBestKeyword(data.bestKeyword ?? null);
       setTop5(Array.isArray(data.top5) ? data.top5 : []);
-      setTop10(Array.isArray(data.top10) ? data.top10 : []);
       setRankedKeywords(
         Array.isArray(data.rankedKeywords) ? data.rankedKeywords : []
       );
