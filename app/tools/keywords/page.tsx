@@ -1,10 +1,12 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useAuth } from "@/components/providers/AuthProvider";
+import { saveToolFlow } from "@/lib/tool-flow";
 
 type RankedKeyword = {
   keyword: string;
@@ -41,6 +43,13 @@ export default function KeywordsPage() {
       router.replace("/login");
     }
   }, [loading, user, router]);
+
+  function saveKeywordForTools(keyword: string, secondary?: string[]) {
+    saveToolFlow({
+      keyword,
+      secondaryKeywords: secondary ?? [],
+    });
+  }
 
   async function findKeywords() {
     if (!topic.trim()) {
@@ -90,6 +99,15 @@ export default function KeywordsPage() {
       setCreditsRemaining(
         typeof data.creditsRemaining === "number" ? data.creditsRemaining : null
       );
+
+      if (data.bestKeyword?.keyword) {
+        saveKeywordForTools(
+          data.bestKeyword.keyword,
+          Array.isArray(data.top5)
+            ? data.top5.map((item: RankedKeyword) => item.keyword)
+            : []
+        );
+      }
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -202,23 +220,78 @@ export default function KeywordsPage() {
               Best keyword
             </p>
 
-            <div className="mt-3 flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-              <div>
-                <h2 className="text-2xl font-semibold text-white">
-                  {bestKeyword.keyword}
-                </h2>
-                <p className="mt-2 text-sm text-white/70">
-                  Search volume: {bestKeyword.search_volume} · Competition:{" "}
-                  {bestKeyword.competition_level} · Score: {bestKeyword.score}
-                </p>
+            <div className="mt-3 flex flex-col gap-4">
+              <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
+                <div>
+                  <h2 className="text-2xl font-semibold text-white">
+                    {bestKeyword.keyword}
+                  </h2>
+                  <p className="mt-2 text-sm text-white/70">
+                    Search volume: {bestKeyword.search_volume} · Competition:{" "}
+                    {bestKeyword.competition_level} · Score: {bestKeyword.score}
+                  </p>
+                </div>
+
+                <button
+                  onClick={() => copy(bestKeyword.keyword)}
+                  className="rounded-2xl border border-white/10 bg-[#1f1f1f] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#242424]"
+                >
+                  Copy keyword
+                </button>
               </div>
 
-              <button
-                onClick={() => copy(bestKeyword.keyword)}
-                className="rounded-2xl border border-white/10 bg-[#1f1f1f] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#242424]"
-              >
-                Copy keyword
-              </button>
+              <div className="flex flex-wrap gap-3">
+                <button
+                  onClick={() =>
+                    saveKeywordForTools(
+                      bestKeyword.keyword,
+                      top5.map((item) => item.keyword)
+                    )
+                  }
+                  className="rounded-2xl border border-white/10 bg-[#1f1f1f] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#242424]"
+                >
+                  Save keyword
+                </button>
+
+                <Link
+                  href="/tools/tags"
+                  onClick={() =>
+                    saveKeywordForTools(
+                      bestKeyword.keyword,
+                      top5.map((item) => item.keyword)
+                    )
+                  }
+                  className="rounded-2xl bg-[#ff0033] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#e0002d]"
+                >
+                  Use in Tags
+                </Link>
+
+                <Link
+                  href="/tools/titles"
+                  onClick={() =>
+                    saveKeywordForTools(
+                      bestKeyword.keyword,
+                      top5.map((item) => item.keyword)
+                    )
+                  }
+                  className="rounded-2xl border border-white/10 bg-[#1f1f1f] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#242424]"
+                >
+                  Use in Titles
+                </Link>
+
+                <Link
+                  href="/tools/descriptions"
+                  onClick={() =>
+                    saveKeywordForTools(
+                      bestKeyword.keyword,
+                      top5.map((item) => item.keyword)
+                    )
+                  }
+                  className="rounded-2xl border border-white/10 bg-[#1f1f1f] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#242424]"
+                >
+                  Use in Description
+                </Link>
+              </div>
             </div>
           </div>
         )}

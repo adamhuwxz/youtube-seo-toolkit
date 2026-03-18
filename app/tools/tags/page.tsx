@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Copy, CheckCircle, Search, Tags, Trophy } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useRouter } from "next/navigation";
+import { readToolFlow, saveToolFlow } from "@/lib/tool-flow";
 
 type RankedTag = {
   tag: string;
@@ -42,6 +44,14 @@ export default function TagToolPage() {
   const [top10, setTop10] = useState<RankedTag[]>([]);
   const [loadingGenerate, setLoadingGenerate] = useState(false);
   const [loadingValidate, setLoadingValidate] = useState(false);
+
+  useEffect(() => {
+    const flow = readToolFlow();
+
+    if (flow.keyword) {
+      setKeyword(flow.keyword);
+    }
+  }, []);
 
   async function generateTags() {
     if (!keyword.trim()) {
@@ -118,6 +128,15 @@ export default function TagToolPage() {
       setValidated(Array.isArray(data.rankedTags) ? data.rankedTags : []);
       setTop5(Array.isArray(data.top5) ? data.top5 : []);
       setTop10(Array.isArray(data.top10) ? data.top10 : []);
+
+      if (data.bestTag?.tag) {
+        saveToolFlow({
+          keyword: data.bestTag.tag,
+          secondaryKeywords: Array.isArray(data.top5)
+            ? data.top5.map((item) => item.tag)
+            : [],
+        });
+      }
     } catch (error) {
       console.error("validateTags error:", error);
       alert("Validation failed.");
@@ -181,7 +200,9 @@ export default function TagToolPage() {
             <div className="rounded-2xl border border-white/10 bg-[#1f1f1f] p-5">
               <div className="mb-4 flex items-center gap-2">
                 <Search className="h-4 w-4 text-red-400" />
-                <h2 className="text-base font-semibold">Start with one keyword</h2>
+                <h2 className="text-base font-semibold">
+                  Start with one keyword
+                </h2>
               </div>
 
               <div className="space-y-3">
@@ -214,7 +235,9 @@ export default function TagToolPage() {
               <div className="rounded-2xl border border-red-500/20 bg-[#1f1f1f] p-5">
                 <div className="mb-4 flex items-center gap-2">
                   <Trophy className="h-4 w-4 text-red-400" />
-                  <h2 className="text-base font-semibold">Recommended stacks</h2>
+                  <h2 className="text-base font-semibold">
+                    Recommended stacks
+                  </h2>
                 </div>
 
                 {top5.length > 0 && (
@@ -242,13 +265,43 @@ export default function TagToolPage() {
                         </div>
                       ))}
                     </div>
+
+                    <div className="mt-4 flex flex-wrap gap-3">
+                      <Link
+                        href="/tools/titles"
+                        onClick={() =>
+                          saveToolFlow({
+                            keyword: top5[0]?.tag ?? keyword,
+                            secondaryKeywords: top5.map((item) => item.tag),
+                          })
+                        }
+                        className="rounded-xl bg-[#ff0033] px-4 py-2 text-sm font-medium text-white hover:bg-[#e0002d]"
+                      >
+                        Use Top Keyword in Titles
+                      </Link>
+
+                      <Link
+                        href="/tools/descriptions"
+                        onClick={() =>
+                          saveToolFlow({
+                            keyword: top5[0]?.tag ?? keyword,
+                            secondaryKeywords: top5.map((item) => item.tag),
+                          })
+                        }
+                        className="rounded-xl border border-white/10 bg-[#121212] px-4 py-2 text-sm font-medium text-white hover:bg-[#1a1a1a]"
+                      >
+                        Use in Description
+                      </Link>
+                    </div>
                   </div>
                 )}
 
                 {top10.length > 0 && (
                   <div>
                     <div className="mb-2 flex items-center justify-between">
-                      <h3 className="text-sm font-medium text-white/80">Top 10</h3>
+                      <h3 className="text-sm font-medium text-white/80">
+                        Top 10
+                      </h3>
                       <button
                         onClick={() => copyRankedTags(top10)}
                         className="text-xs font-medium text-red-300 hover:text-red-200"
@@ -341,7 +394,10 @@ export default function TagToolPage() {
                       </div>
 
                       {i === 0 && (
-                        <CheckCircle className="mt-0.5 shrink-0 text-red-400" size={18} />
+                        <CheckCircle
+                          className="mt-0.5 shrink-0 text-red-400"
+                          size={18}
+                        />
                       )}
                     </div>
                   ))}

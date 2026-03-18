@@ -1,11 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Copy, CheckCircle, Type, Trophy } from "lucide-react";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useRouter } from "next/navigation";
+import { readToolFlow, saveToolFlow } from "@/lib/tool-flow";
 
 type RankedTitle = {
   title: string;
@@ -42,6 +44,14 @@ export default function TitleToolPage() {
 
   const [loadingGenerate, setLoadingGenerate] = useState(false);
   const [loadingValidate, setLoadingValidate] = useState(false);
+
+  useEffect(() => {
+    const flow = readToolFlow();
+
+    if (flow.keyword) {
+      setKeyword(flow.keyword);
+    }
+  }, []);
 
   async function generateTitles() {
     if (!keyword.trim()) {
@@ -116,6 +126,12 @@ export default function TitleToolPage() {
 
       setValidated(Array.isArray(data.rankedTitles) ? data.rankedTitles : []);
       setTop3(Array.isArray(data.top3) ? data.top3 : []);
+
+      if (data.bestTitle?.keyword) {
+        saveToolFlow({
+          keyword: data.bestTitle.keyword,
+        });
+      }
     } catch (error) {
       console.error("validateTitles error:", error);
       alert("Validation failed.");
@@ -167,7 +183,9 @@ export default function TitleToolPage() {
             <div className="rounded-2xl border border-white/10 bg-[#1f1f1f] p-5">
               <div className="mb-4 flex items-center gap-2">
                 <Type className="h-4 w-4 text-red-400" />
-                <h2 className="text-base font-semibold">Generate from one keyword</h2>
+                <h2 className="text-base font-semibold">
+                  Generate from one keyword
+                </h2>
               </div>
 
               <div className="space-y-3">
@@ -228,11 +246,28 @@ export default function TitleToolPage() {
                         </div>
 
                         {i === 0 && (
-                          <CheckCircle className="mt-0.5 shrink-0 text-red-400" size={18} />
+                          <CheckCircle
+                            className="mt-0.5 shrink-0 text-red-400"
+                            size={18}
+                          />
                         )}
                       </div>
                     </div>
                   ))}
+                </div>
+
+                <div className="mt-4">
+                  <Link
+                    href="/tools/descriptions"
+                    onClick={() =>
+                      saveToolFlow({
+                        keyword: top3[0]?.keyword ?? keyword,
+                      })
+                    }
+                    className="inline-flex rounded-xl bg-[#ff0033] px-4 py-2 text-sm font-medium text-white hover:bg-[#e0002d]"
+                  >
+                    Use Keyword in Description
+                  </Link>
                 </div>
               </div>
             )}
@@ -306,7 +341,10 @@ export default function TitleToolPage() {
                       </div>
 
                       {i === 0 && (
-                        <CheckCircle className="mt-0.5 shrink-0 text-red-400" size={18} />
+                        <CheckCircle
+                          className="mt-0.5 shrink-0 text-red-400"
+                          size={18}
+                        />
                       )}
                     </div>
                   ))}

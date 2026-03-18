@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { useAuth } from "@/components/providers/AuthProvider";
+import { readToolFlow } from "@/lib/tool-flow";
 
 export default function DescriptionsPage() {
   const router = useRouter();
@@ -21,6 +22,17 @@ export default function DescriptionsPage() {
   useEffect(() => {
     if (!loading && !user) {
       router.replace("/login");
+      return;
+    }
+
+    const flow = readToolFlow();
+
+    if (flow.keyword) {
+      setPrimaryKeyword(flow.keyword);
+    }
+
+    if (flow.secondaryKeywords?.length) {
+      setSecondaryKeywords(flow.secondaryKeywords.join(", "));
     }
   }, [loading, user, router]);
 
