@@ -42,26 +42,8 @@ const nextConfig: NextConfig = {
   },
 
   async headers() {
-    return [
-      {
-        source: "/(.*)",
-        headers: [
-          {
-            key: "Content-Security-Policy",
-            value: [
-              "default-src 'self'",
-              "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://js.stripe.com https://b.stripecdn.com https://newassets.hcaptcha.com",
-              "frame-src 'self' https://js.stripe.com https://hooks.stripe.com https://checkout.stripe.com https://b.stripecdn.com https://newassets.hcaptcha.com",
-              "connect-src 'self' https://api.stripe.com https://r.stripe.com https://b.stripecdn.com https://newassets.hcaptcha.com https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firebaseinstallations.googleapis.com https://firestore.googleapis.com https://*.googleapis.com https://*.firebaseio.com wss://*.firebaseio.com",
-              "img-src 'self' data: https://*.stripe.com https://*.hcaptcha.com",
-              "style-src 'self' 'unsafe-inline'",
-              "font-src 'self' data:",
-            ].join("; "),
-          },
-        ],
-      },
-    ];
-  },
+  return [];
+}
 };
 
 export default nextConfig;
