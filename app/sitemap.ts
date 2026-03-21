@@ -8,11 +8,13 @@ export const dynamic = 'force-dynamic';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://seotube.io';
 
-  // 1. Define your static pages first (Always safe)
+  // 1. Define your static pages (Added Privacy and Terms here)
   const staticPages: MetadataRoute.Sitemap = [
     { url: baseUrl, lastModified: new Date(), changeFrequency: 'monthly', priority: 1 },
     { url: `${baseUrl}/tools`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.9 },
     { url: `${baseUrl}/blog`, lastModified: new Date(), changeFrequency: 'daily', priority: 0.8 },
+    { url: `${baseUrl}/privacy`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${baseUrl}/terms`, lastModified: new Date(), changeFrequency: 'yearly', priority: 0.3 },
   ];
 
   try {
@@ -33,7 +35,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return [...staticPages, ...blogPosts];
   } catch (error) {
     // 3. Fallback: If Firebase blocks the build bot, just return static pages
-    // This prevents the "Missing Permissions" build error
     console.error("Sitemap generation skipped dynamic posts due to permissions:", error);
     return staticPages;
   }

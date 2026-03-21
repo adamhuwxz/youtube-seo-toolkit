@@ -1,4 +1,5 @@
 "use client";
+"use client";
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
@@ -6,17 +7,16 @@ import {
   Sparkles,
   Wand2,
   LogOut,
-  CreditCard,
   Coins,
-  Wrench,
-} from "lucide-react";
+  BookOpen,
+} from "lucide-react"; // Removed CreditCard and Wrench
 import { motion } from "framer-motion";
 import { doc, onSnapshot } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 
 import { useAuth } from "@/components/providers/AuthProvider";
 import { logOut } from "@/lib/auth";
-import { auth, db } from "@/lib/firebase";
+import { db } from "@/lib/firebase"; // Removed auth
 
 type UserDoc = {
   credits?: number;
@@ -34,7 +34,6 @@ export default function Navbar() {
       return;
     }
 
-    const userPath = `users/${user.uid}`;
     const ref = doc(db, "users", user.uid);
 
     const unsubscribe = onSnapshot(
@@ -49,14 +48,7 @@ export default function Navbar() {
         setCredits(data.credits ?? 0);
       },
       (error) => {
-        console.error("Failed to listen for credits:", {
-          code: error.code,
-          message: error.message,
-          path: userPath,
-          userUid: user.uid,
-          currentAuthUid: auth.currentUser?.uid ?? null,
-          projectId: db.app.options.projectId,
-        });
+        console.error("Failed to listen for credits:", error);
       }
     );
 
@@ -98,6 +90,7 @@ export default function Navbar() {
           </div>
         </Link>
 
+        {/* Main Navigation */}
         <nav className="hidden items-center gap-6 lg:flex">
           <Link
             href="/"
@@ -115,6 +108,14 @@ export default function Navbar() {
             </Link>
           )}
 
+          {/* BLOG LINK ADDED HERE */}
+          <Link
+            href="/blog"
+            className="text-sm text-white/70 transition hover:text-white font-medium"
+          >
+            Blog
+          </Link>
+
           <Link
             href="/pricing"
             className="text-sm text-white/70 transition hover:text-white"
@@ -131,7 +132,7 @@ export default function Navbar() {
           ) : user ? (
             <>
               <div className="flex items-center gap-3 rounded-full border border-white/10 bg-[#1f1f1f] px-4 py-2 text-sm text-white/75">
-                <span className="max-w-[180px] truncate">
+                <span className="max-w-[120px] truncate md:max-w-[180px]">
                   {user.displayName || user.email}
                 </span>
 
@@ -143,20 +144,12 @@ export default function Navbar() {
                 </span>
               </div>
 
+              {/* Mobile/Tablet Blog Icon Link */}
               <Link
-                href="/tools"
-                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#1f1f1f] px-3 py-2 text-sm font-medium text-white transition hover:bg-[#2a2a2a] md:px-4"
+                href="/blog"
+                className="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-full border border-white/10 bg-[#1f1f1f] text-white transition hover:bg-[#2a2a2a]"
               >
-                <Wrench className="h-4 w-4" />
-                <span className="hidden sm:inline">Tools</span>
-              </Link>
-
-              <Link
-                href="/pricing"
-                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#1f1f1f] px-3 py-2 text-sm font-medium text-white transition hover:bg-[#2a2a2a] md:px-4"
-              >
-                <CreditCard className="h-4 w-4" />
-                <span className="hidden sm:inline">Plans</span>
+                <BookOpen className="h-4 w-4" />
               </Link>
 
               <button
@@ -166,19 +159,18 @@ export default function Navbar() {
               >
                 <LogOut className="h-4 w-4" />
                 <span className="hidden sm:inline">
-                  {loggingOut ? "Logging out..." : "Logout"}
+                  {loggingOut ? "..." : "Logout"}
                 </span>
               </button>
             </>
           ) : (
             <div className="flex items-center gap-2 md:gap-3">
               <Link
-                href="/pricing"
-                className="hidden rounded-full border border-white/10 bg-[#1f1f1f] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#2a2a2a] sm:inline-flex"
+                href="/blog"
+                className="rounded-full border border-white/10 bg-[#1f1f1f] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#2a2a2a]"
               >
-                Pricing
+                Blog
               </Link>
-
               <Link
                 href="/login"
                 className="inline-flex items-center gap-2 rounded-full bg-[#ff0033] px-4 py-2 text-sm font-medium text-white transition hover:bg-[#e0002d]"
