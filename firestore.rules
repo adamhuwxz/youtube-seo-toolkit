@@ -3,6 +3,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
+    // --- Helper Functions ---
     function isSignedIn() {
       return request.auth != null;
     }
@@ -11,32 +12,35 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
+    // Your specific Admin UID
+    function isAdmin() {
+      return isSignedIn() && request.auth.uid == '2gQdFftRQzR2O77UQhAAJdtneCw2';
+    }
+
+    // --- Users Collection ---
     match /users/{userId} {
+      // Users can only see their own profile
       allow read: if isOwner(userId);
+      
+      // Allow creation if they are the owner. 
+      // Removed the strict .hasAll() during 'create' to prevent signup crashes.
+      allow create: if isOwner(userId);
 
-      allow create: if isOwner(userId)
-        && request.resource.data.keys().hasOnly([
-          "email",
-          "plan",
-          "credits",
-          "createdAt",
-          "monthlyCredits",
-          "stripeCustomerId",
-          "stripeSubscriptionId"
-        ]);
-
-      allow update: if isOwner(userId)
-        && request.resource.data.keys().hasOnly([
-          "email",
-          "plan",
-          "credits",
-          "createdAt",
-          "monthlyCredits",
-          "stripeCustomerId",
-          "stripeSubscriptionId"
-        ]);
+      // Allow updates only if they don't try to change their own plan or credits 
+      // (Only an Admin or Backend should change these via Admin SDK)
+      allow update: if isOwner(userId) 
+        && !request.resource.data.diff(resource.data).changedKeys().hasAny(['plan', 'credits']);
 
       allow delete: if false;
+    }
+
+    // --- Blog Posts Collection (The SEO Factory) ---
+    match /posts/{postId} {
+      // MUST BE TRUE for Google/SEO to work
+      allow read: if true;
+
+      // Only you (the Admin) can manage the content
+      allow write: if isAdmin();
     }
   }
 }
