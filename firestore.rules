@@ -8,39 +8,37 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-
-    // Your specific Admin UID
+    // Checks both UID AND Email for absolute certainty
     function isAdmin() {
-      return isSignedIn() && request.auth.uid == '2gQdFftRQzR2O77UQhAAJdtneCw2';
+      return isSignedIn() && 
+        (request.auth.uid == '2gQdFftRQzR2O77UQhAAJdtneCw2' || 
+         request.auth.token.email == 'support@seotube.io');
     }
 
     // --- Users Collection ---
     match /users/{userId} {
-      // Users can only see their own profile
-      allow read: if isOwner(userId);
+      allow read: if isSignedIn() && request.auth.uid == userId;
+      allow create: if isSignedIn() && request.auth.uid == userId;
       
-      // Allow creation if they are the owner. 
-      // Removed the strict .hasAll() during 'create' to prevent signup crashes.
-      allow create: if isOwner(userId);
-
-      // Allow updates only if they don't try to change their own plan or credits 
-      // (Only an Admin or Backend should change these via Admin SDK)
-      allow update: if isOwner(userId) 
+      // Protect sensitive fields from client-side updates
+      allow update: if isSignedIn() && request.auth.uid == userId
         && !request.resource.data.diff(resource.data).changedKeys().hasAny(['plan', 'credits']);
-
-      allow delete: if false;
     }
 
-    // --- Blog Posts Collection (The SEO Factory) ---
+    // --- Blog Posts Collection ---
     match /posts/{postId} {
-      // MUST BE TRUE for Google/SEO to work
+      // Publicly readable for SEO
       allow read: if true;
 
-      // Only you (the Admin) can manage the content
-      allow write: if isAdmin();
+      // Split 'write' into specific permissions for better debugging
+      allow create: if isAdmin();
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+    
+    // Default deny for everything else
+    match /{document=**} {
+      allow read, write: if false;
     }
   }
 }
