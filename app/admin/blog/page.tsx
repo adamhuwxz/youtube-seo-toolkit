@@ -4,7 +4,7 @@ import { db } from "@/lib/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useAuth } from "@/components/providers/AuthProvider";
 import { useRouter } from "next/navigation";
-import { Wand2, ShieldCheck, Send, Sparkles } from "lucide-react";
+import { Wand2, ShieldCheck, Send, Sparkles, Plus, Trash2 } from "lucide-react";
 
 interface BlogPost {
   title: string;
@@ -17,12 +17,24 @@ export default function AdminBlogPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
   
-  const [keywords, setKeywords] = useState<string>("");
+  const [keywordList, setKeywordList] = useState<string[]>([""]);
   const [extraInstructions, setExtraInstructions] = useState<string>("");
   const [isGenerating, setIsGenerating] = useState<boolean>(false);
   const [post, setPost] = useState<BlogPost | null>(null);
 
-  // SECURITY: Only allow support@seotube.io
+  const addKeywordField = () => setKeywordList([...keywordList, ""]);
+
+  const removeKeywordField = (index: number) => {
+    const newList = keywordList.filter((_, i) => i !== index);
+    setKeywordList(newList.length ? newList : [""]);
+  };
+
+  const updateKeywordValue = (index: number, value: string) => {
+    const newList = [...keywordList];
+    newList[index] = value;
+    setKeywordList(newList);
+  };
+
   useEffect(() => {
     if (!loading) {
       if (!user || user.email !== "support@seotube.io") {
@@ -32,13 +44,15 @@ export default function AdminBlogPage() {
   }, [user, loading, router]);
 
   async function generateBlogPost() {
-    if (!keywords) return alert("Please enter at least one keyword");
+    const validKeywords = keywordList.filter(k => k.trim() !== "");
+    if (validKeywords.length === 0) return alert("Please enter at least one keyword");
+    
     setIsGenerating(true);
     try {
       const res = await fetch("/api/generate-blog", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ keywords, extraInstructions }),
+        body: JSON.stringify({ keywords: validKeywords, extraInstructions }),
       });
       const data = await res.json();
       if (data.error) throw new Error(data.error);
@@ -61,7 +75,7 @@ export default function AdminBlogPage() {
       });
       alert("Post Published Successfully!");
       setPost(null);
-      setKeywords("");
+      setKeywordList([""]);
       setExtraInstructions("");
     } catch (error) {
       console.error("Firestore Error:", error);
@@ -69,14 +83,13 @@ export default function AdminBlogPage() {
     }
   }
 
-  if (loading) return <div className="min-h-screen bg-[#0f0f0f] flex items-center justify-center text-white">Verifying Admin Status...</div>;
+  if (loading) return <div className="min-h-screen bg-[#0f0f0f] flex items-center justify-center text-white font-bold">Verifying Admin...</div>;
   if (!user || user.email !== "support@seotube.io") return null;
 
   return (
     <main className="min-h-screen bg-[#0a0a0a] text-white pt-32 pb-20 px-6">
       <div className="max-w-4xl mx-auto">
         
-        {/* Header Section */}
         <div className="flex items-center gap-4 mb-12">
           <div className="bg-red-600 p-3 rounded-2xl shadow-lg shadow-red-600/20">
             <ShieldCheck className="w-8 h-8 text-white" />
@@ -87,27 +100,54 @@ export default function AdminBlogPage() {
           </div>
         </div>
         
-        {/* Generator Controls */}
         <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 mb-12 backdrop-blur-sm">
           <div className="space-y-6">
+            
             <div>
-              <label className="text-xs font-bold text-white/40 uppercase ml-2 mb-2 block tracking-tighter">Target Keywords</label>
-              <input 
-                value={keywords}
-                onChange={(e) => setKeywords(e.target.value)}
-                className="w-full p-5 bg-black/40 border border-white/10 rounded-2xl outline-none focus:border-red-500/50 transition-all text-lg"
-                placeholder="e.g., YouTube Shorts Algorithm 2026, Viral Retention"
-              />
+              <label className="text-xs font-bold text-white/40 uppercase ml-2 mb-3 block tracking-tighter">
+                Target SEO Keywords
+              </label>
+              <div className="space-y-3">
+                {keywordList.map((kw, index) => (
+                  <div key={index} className="flex gap-2">
+                    <input 
+                      value={kw}
+                      onChange={(e) => updateKeywordValue(index, e.target.value)}
+                      className="flex-1 p-4 bg-black/40 border border-white/10 rounded-xl outline-none focus:border-red-500/50 transition-all text-white"
+                      placeholder={index === 0 ? "Primary Keyword (e.g. YouTube SEO)" : "Secondary Keyword"}
+                    />
+                    {keywordList.length > 1 && (
+                      <button 
+                        type="button"
+                        onClick={() => removeKeywordField(index)}
+                        className="p-4 bg-red-900/10 hover:bg-red-900/30 border border-red-900/20 rounded-xl text-red-500 transition-colors"
+                      >
+                        <Trash2 className="w-5 h-5" />
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+              <button 
+                type="button"
+                onClick={addKeywordField}
+                className="mt-4 flex items-center gap-2 text-sm font-bold text-red-500 hover:text-red-400 transition-colors ml-2"
+              >
+                <Plus className="w-4 h-4" /> Add Related Keyword
+              </button>
             </div>
 
             <div>
-              <label className="text-xs font-bold text-white/40 uppercase ml-2 mb-2 block tracking-tighter">Secret Sauce (Extra Context)</label>
+              {/* ESLint Fix: Using &quot; and &apos; */}
+              <label className="text-xs font-bold text-white/40 uppercase ml-2 mb-2 block tracking-tighter">
+                The &quot;Answer&quot; Prompt (Extra Context)
+              </label>
               <textarea 
                 value={extraInstructions}
                 onChange={(e) => setExtraInstructions(e.target.value)}
-                rows={3}
+                rows={4}
                 className="w-full p-5 bg-black/40 border border-white/10 rounded-2xl outline-none focus:border-red-500/50 transition-all resize-none text-white/80"
-                placeholder="e.g., Focus on CTR, mention MrBeast's latest strategy, use a high-energy tone..."
+                placeholder="Give the AI specific answers to provide. (e.g. &apos;Explain that 2026 views come from AVD over CTR&apos;)"
               />
             </div>
 
@@ -119,19 +159,18 @@ export default function AdminBlogPage() {
               {isGenerating ? (
                 <>
                   <Sparkles className="w-6 h-6 animate-pulse" />
-                  <span>AI is Crafting...</span>
+                  <span>Researcher is Mining Data...</span>
                 </>
               ) : (
                 <>
                   <Wand2 className="w-6 h-6" />
-                  <span>Generate Growth Post</span>
+                  <span>Generate Authority Article</span>
                 </>
               )}
             </button>
           </div>
         </div>
 
-        {/* Preview Section */}
         {post && (
           <div className="border border-white/10 rounded-[2.5rem] bg-[#111] p-10 shadow-2xl animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="mb-10 pb-10 border-b border-white/10">
@@ -153,7 +192,7 @@ export default function AdminBlogPage() {
               className="w-full bg-green-600 hover:bg-green-500 py-6 rounded-2xl font-black text-xl transition-all flex items-center justify-center gap-3 shadow-xl shadow-green-600/20 group"
             >
               <Send className="w-6 h-6 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-              Publish to SEOTube.io
+              Publish to Production
             </button>
           </div>
         )}
