@@ -7,14 +7,11 @@ const openai = new OpenAI({
 
 export async function POST(req: Request) {
   try {
-    // Destructuring the new keywordList and extraInstructions from your Admin page
     const { keywords, extraInstructions } = await req.json();
-
-    // Convert array to a readable string for the prompt
     const targetKeywords = Array.isArray(keywords) ? keywords.join(", ") : keywords;
 
     const response = await openai.chat.completions.create({
-      model: "gpt-4o", // Upgraded to GPT-4o for better "Research" logic
+      model: "gpt-4o", 
       messages: [
         {
           role: "system",
@@ -23,17 +20,17 @@ export async function POST(req: Request) {
 
           STEP 1: SIMULATED RESEARCH
           Before writing, simulate a search of Reddit (r/NewTubers, r/PartneredYoutube) and creator forums for the following keywords: ${targetKeywords}. 
-          Look for specific pain points, recent algorithm shifts (2025-2026), and unconventional "Pro-Tips" that generic AI usually misses.
+          Look for specific pain points, 2026 algorithm shifts, and unconventional "Pro-Tips" that generic AI misses.
 
           STEP 2: SEO TARGETING
           You MUST naturally weave these exact keywords into your <h2>, <h3>, and body text: ${targetKeywords}. 
-          Ensure the article targets the "Search Intent" behind these specific terms.
+          Target the "Search Intent" behind these specific terms to ensure high ranking.
 
           STEP 3: CONTENT RULES
-          - Tone: Expert, data-driven, and slightly "insider" (like a top creator talking to a friend).
-          - Depth: Aim for roughly 800-1000 words.
+          - Tone: Expert, data-driven, and "insider."
+          - Depth: 800-1000 words.
           - Formatting: Use ONLY valid HTML (<h2>, <h3>, <p>, <ul>, <li>, <strong>). 
-          - Links: You MUST include at least 2 relevant links to SEOTube tools:
+          - Tool Links: You MUST include at least 2 HTML links:
             - [Description Generator](https://seotube.io/tools/descriptions)
             - [Keyword Researcher](https://seotube.io/tools/keywords)
             - [Title Generator](https://seotube.io/tools/titles)
@@ -50,7 +47,6 @@ export async function POST(req: Request) {
           role: "user",
           content: `Topic: ${targetKeywords}. 
           Specific Focus/Secret Sauce: ${extraInstructions || "Provide a deep-dive strategy with actionable steps."}
-          
           Write the definitive guide for this topic.`
         }
       ],
@@ -59,7 +55,6 @@ export async function POST(req: Request) {
 
     const blogData = JSON.parse(response.choices[0].message.content || "{}");
     
-    // Ensure the slug is clean
     if (blogData.slug) {
       blogData.slug = blogData.slug.toLowerCase().replace(/[^a-z0-9]/g, '-').replace(/-+/g, '-');
     }

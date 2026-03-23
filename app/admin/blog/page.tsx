@@ -23,12 +23,10 @@ export default function AdminBlogPage() {
   const [post, setPost] = useState<BlogPost | null>(null);
 
   const addKeywordField = () => setKeywordList([...keywordList, ""]);
-
   const removeKeywordField = (index: number) => {
     const newList = keywordList.filter((_, i) => i !== index);
     setKeywordList(newList.length ? newList : [""]);
   };
-
   const updateKeywordValue = (index: number, value: string) => {
     const newList = [...keywordList];
     newList[index] = value;
@@ -89,7 +87,6 @@ export default function AdminBlogPage() {
   return (
     <main className="min-h-screen bg-[#0a0a0a] text-white pt-32 pb-20 px-6">
       <div className="max-w-4xl mx-auto">
-        
         <div className="flex items-center gap-4 mb-12">
           <div className="bg-red-600 p-3 rounded-2xl shadow-lg shadow-red-600/20">
             <ShieldCheck className="w-8 h-8 text-white" />
@@ -102,11 +99,8 @@ export default function AdminBlogPage() {
         
         <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 mb-12 backdrop-blur-sm">
           <div className="space-y-6">
-            
             <div>
-              <label className="text-xs font-bold text-white/40 uppercase ml-2 mb-3 block tracking-tighter">
-                Target SEO Keywords
-              </label>
+              <label className="text-xs font-bold text-white/40 uppercase ml-2 mb-3 block tracking-tighter">Target SEO Keywords</label>
               <div className="space-y-3">
                 {keywordList.map((kw, index) => (
                   <div key={index} className="flex gap-2">
@@ -114,34 +108,23 @@ export default function AdminBlogPage() {
                       value={kw}
                       onChange={(e) => updateKeywordValue(index, e.target.value)}
                       className="flex-1 p-4 bg-black/40 border border-white/10 rounded-xl outline-none focus:border-red-500/50 transition-all text-white"
-                      placeholder={index === 0 ? "Primary Keyword (e.g. YouTube SEO)" : "Secondary Keyword"}
+                      placeholder={index === 0 ? "Primary Keyword" : "Secondary Keyword"}
                     />
                     {keywordList.length > 1 && (
-                      <button 
-                        type="button"
-                        onClick={() => removeKeywordField(index)}
-                        className="p-4 bg-red-900/10 hover:bg-red-900/30 border border-red-900/20 rounded-xl text-red-500 transition-colors"
-                      >
+                      <button type="button" onClick={() => removeKeywordField(index)} className="p-4 bg-red-900/10 hover:bg-red-900/30 border border-red-900/20 rounded-xl text-red-500 transition-colors">
                         <Trash2 className="w-5 h-5" />
                       </button>
                     )}
                   </div>
                 ))}
               </div>
-              <button 
-                type="button"
-                onClick={addKeywordField}
-                className="mt-4 flex items-center gap-2 text-sm font-bold text-red-500 hover:text-red-400 transition-colors ml-2"
-              >
+              <button type="button" onClick={addKeywordField} className="mt-4 flex items-center gap-2 text-sm font-bold text-red-500 hover:text-red-400 transition-colors ml-2">
                 <Plus className="w-4 h-4" /> Add Related Keyword
               </button>
             </div>
 
             <div>
-              {/* ESLint Fix: Using &quot; and &apos; */}
-              <label className="text-xs font-bold text-white/40 uppercase ml-2 mb-2 block tracking-tighter">
-                The &quot;Answer&quot; Prompt (Extra Context)
-              </label>
+              <label className="text-xs font-bold text-white/40 uppercase ml-2 mb-2 block tracking-tighter">The &quot;Answer&quot; Prompt (Extra Context)</label>
               <textarea 
                 value={extraInstructions}
                 onChange={(e) => setExtraInstructions(e.target.value)}
@@ -151,22 +134,8 @@ export default function AdminBlogPage() {
               />
             </div>
 
-            <button 
-              onClick={generateBlogPost}
-              disabled={isGenerating}
-              className="w-full bg-red-600 hover:bg-red-500 disabled:opacity-50 h-16 rounded-2xl font-black text-lg transition-all flex items-center justify-center gap-3 shadow-xl shadow-red-600/20"
-            >
-              {isGenerating ? (
-                <>
-                  <Sparkles className="w-6 h-6 animate-pulse" />
-                  <span>Researcher is Mining Data...</span>
-                </>
-              ) : (
-                <>
-                  <Wand2 className="w-6 h-6" />
-                  <span>Generate Authority Article</span>
-                </>
-              )}
+            <button onClick={generateBlogPost} disabled={isGenerating} className="w-full bg-red-600 hover:bg-red-500 disabled:opacity-50 h-16 rounded-2xl font-black text-lg transition-all flex items-center justify-center gap-3 shadow-xl shadow-red-600/20">
+              {isGenerating ? <><Sparkles className="w-6 h-6 animate-pulse" /><span>Researcher is Mining Data...</span></> : <><Wand2 className="w-6 h-6" /><span>Generate Authority Article</span></>}
             </button>
           </div>
         </div>
@@ -181,18 +150,9 @@ export default function AdminBlogPage() {
               <h2 className="text-4xl font-black leading-tight mb-4 tracking-tight">{post.title}</h2>
               <code className="text-white/30 text-xs bg-black/40 px-3 py-2 rounded-lg">Slug: seotube.io/blog/{post.slug}</code>
             </div>
-
-            <div 
-              className="prose prose-invert prose-red max-w-none mb-12 prose-p:text-white/60 prose-headings:text-white prose-p:leading-relaxed"
-              dangerouslySetInnerHTML={{ __html: post.content }} 
-            />
-
-            <button 
-              onClick={publishToFirebase} 
-              className="w-full bg-green-600 hover:bg-green-500 py-6 rounded-2xl font-black text-xl transition-all flex items-center justify-center gap-3 shadow-xl shadow-green-600/20 group"
-            >
-              <Send className="w-6 h-6 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-              Publish to Production
+            <div className="prose prose-invert prose-red max-w-none mb-12 prose-p:text-white/60 prose-headings:text-white prose-p:leading-relaxed" dangerouslySetInnerHTML={{ __html: post.content }} />
+            <button onClick={publishToFirebase} className="w-full bg-green-600 hover:bg-green-500 py-6 rounded-2xl font-black text-xl transition-all flex items-center justify-center gap-3 shadow-xl shadow-green-600/20 group">
+              <Send className="w-6 h-6 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />Confirm and Push to Production
             </button>
           </div>
         )}
